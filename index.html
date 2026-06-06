@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>My Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface2: #334155;
+  --border: #475569;
+  --text: #f1f5f9;
+  --text2: #94a3b8;
+  --accent: #3b82f6;
+  --danger: #ef4444;
+  --success: #22c55e;
+  --shift1: #f59e0b;
+  --shift2: #3b82f6;
+  --shiftake: #a78bfa;
+  --shiftrest: #4b5563;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Auth ── */
+#auth-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  gap: 20px;
+  padding: 20px;
+}
+#auth-screen h1 { font-size: 1.8rem; }
+#auth-screen p { color: var(--text2); font-size: 0.9rem; }
+.btn-google {
+  background: #fff;
+  color: #333;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-google:hover { background: #f0f0f0; }
+
+/* ── App shell ── */
+#app { display: none; flex-direction: column; min-height: 100vh; }
+
+/* Tab nav */
+.tab-nav {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text2);
+  padding: 12px 4px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn .tab-icon { font-size: 1.3rem; }
+.tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* Tab content */
+.tab-content { display: none; flex: 1; padding: 16px; max-width: 600px; width: 100%; margin: 0 auto; }
+.tab-content.active { display: block; }
+
+/* ── Common ── */
+.card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card h2 { font-size: 1rem; color: var(--text2); margin-bottom: 12px; }
+.section-title {
+  font-size: 0.85rem;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 16px 0 8px;
+}
+
+/* ── Home tab ── */
+.today-card {
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 12px;
+}
+.today-date { font-size: 1.5rem; font-weight: 700; }
+.today-shift { margin-top: 8px; font-size: 1rem; }
+.shift-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.shift-badge.s1 { background: var(--shift1); color: #000; }
+.shift-badge.s2 { background: var(--shift2); color: #fff; }
+.shift-badge.sake { background: var(--shiftake); color: #fff; }
+.shift-badge.rest { background: var(--shiftrest); color: #fff; }
+
+.week-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
+.week-scroll::-webkit-scrollbar { height: 4px; }
+.week-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.week-day-card {
+  flex: 0 0 56px;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 0.75rem;
+}
+.week-day-card .wd { color: var(--text2); }
+.week-day-card .wdate { font-weight: 700; margin: 4px 0; font-size: 0.9rem; }
+.week-day-card .wshift { font-size: 0.65rem; font-weight: 600; }
+.week-day-card.today { border: 1px solid var(--accent); }
+
+.todo-preview-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.todo-preview-item:last-child { border-bottom: none; }
+.prio-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.prio-high { background: var(--danger); }
+.prio-mid  { background: var(--shift1); }
+.prio-low  { background: var(--text2); }
+
+/* ── Calendar ── */
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cal-nav-btn {
+  background: var(--surface2);
+  border: none;
+  color: var(--text);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.cal-title { font-size: 1.1rem; font-weight: 700; }
+
+.cal-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--text2);
+  margin-bottom: 4px;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  position: relative;
+  background: var(--surface2);
+  border: 1px solid transparent;
+  transition: border-color 0.1s;
+  min-height: 44px;
+}
+.cal-cell:hover { border-color: var(--border); }
+.cal-cell.empty { background: transparent; cursor: default; }
+.cal-cell.today-cell { border-color: var(--accent) !important; }
+.cal-cell .cell-date { font-size: 0.8rem; }
+.cal-cell .cell-shift { font-size: 0.6rem; font-weight: 700; margin-top: 2px; }
+.cal-cell .cell-memo-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text2); margin-top: 2px; }
+
+.cal-cell.shift-1   { background: #78350f; }
+.cal-cell.shift-2   { background: #1e3a5f; }
+.cal-cell.shift-ake { background: #3b1f6b; }
+.cal-cell.shift-rest{ background: #1e293b; }
+
+/* Calendar summary */
+.cal-summary {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.cal-sum-item {
+  background: var(--surface2);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  display: flex;
+  gap: 6px;
+}
+.cal-sum-item span { color: var(--text2); }
+
+/* Shift picker modal */
+.modal-bg {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 200;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-bg.open { display: flex; }
+.modal-sheet {
+  background: var(--surface);
+  border-radius: 16px 16px 0 0;
+  width: 100%;
+  max-width: 600px;
+  padding: 20px;
+}
+.modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+.shift-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.shift-opt-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 16px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #fff;
+}
+.shift-opt-btn.s1   { background: var(--shift1); color: #000; }
+.shift-opt-btn.s2   { background: var(--shift2); }
+.shift-opt-btn.sake { background: var(--shiftake); }
+.shift-opt-btn.rest { background: var(--shiftrest); }
+.shift-opt-btn.clear { background: var(--surface2); color: var(--text2); }
+.memo-area {
+  margin-top: 14px;
+}
+.memo-area label { font-size: 0.85rem; color: var(--text2); display: block; margin-bottom: 6px; }
+.memo-area textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 8px;
+  font-size: 0.9rem;
+  resize: none;
+  font-family: inherit;
+}
+.modal-close-btn {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--surface2);
+  border: none;
+  color: var(--text2);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+/* ── TODO ── */
+.todo-input-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.todo-input-row input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+}
+.prio-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 0 8px;
+  font-size: 0.9rem;
+}
+.add-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.todo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.todo-item:last-child { border-bottom: none; }
+.todo-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #fff;
+}
+.todo-check.done { background: var(--success); border-color: var(--success); }
+.todo-text { flex: 1; font-size: 0.9rem; }
+.todo-text.done { text-decoration: line-through; color: var(--text2); }
+.todo-del {
+  background: none;
+  border: none;
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+}
+.completed-toggle {
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── Goals & Wishlist ── */
+.goal-item {
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 8px;
+}
+.goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.goal-title { font-size: 0.95rem; font-weight: 600; }
+.goal-cat { font-size: 0.7rem; color: var(--text2); }
+.goal-deadline { font-size: 0.75rem; color: var(--text2); }
+.progress-bar-wrap { background: var(--border); border-radius: 4px; height: 8px; margin: 6px 0; }
+.progress-bar-fill { height: 8px; border-radius: 4px; background: var(--accent); transition: width 0.3s; }
+.progress-label { font-size: 0.75rem; color: var(--text2); }
+
+.wish-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.wish-item:last-child { border-bottom: none; }
+.wish-check {
+  width: 20px; height: 20px;
+  border-radius: 4px;
+  border: 2px solid var(--border);
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.8rem;
+}
+.wish-check.bought { background: var(--success); border-color: var(--success); }
+.wish-info { flex: 1; }
+.wish-name { font-size: 0.9rem; }
+.wish-name.bought { text-decoration: line-through; color: var(--text2); }
+.wish-price { font-size: 0.8rem; color: var(--text2); }
+.wish-prio { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; }
+.wish-prio.high { background: #7f1d1d; color: #fca5a5; }
+.wish-prio.mid  { background: #78350f; color: #fcd34d; }
+.wish-prio.low  { background: var(--surface2); color: var(--text2); }
+
+/* Goal/wish form */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.form-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  width: 100%;
+  font-family: inherit;
+}
+.form-input::placeholder { color: var(--text2); }
+.form-select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 9px 8px;
+  font-size: 0.9rem;
+  width: 100%;
+}
+
+.sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.sub-tab {
+  background: var(--surface2);
+  border: none;
+  border-radius: 8px;
+  color: var(--text2);
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.sub-tab.active { background: var(--accent); color: #fff; }
+
+.summary-total {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.85rem;
+  color: var(--text2);
+  padding: 8px 0;
+}
+
+/* loading */
+#loading { text-align: center; padding: 40px; color: var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- Auth Screen -->
+<div id="auth-screen">
+  <div style="font-size:3rem">📋</div>
+  <h1>My Dashboard</h1>
+  <p>シフト・TODO・目標を一元管理</p>
+  <button class="btn-google" onclick="signIn()">
+    <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Googleでログイン
+  </button>
+</div>
+
+<!-- App -->
+<div id="app">
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('home')" id="tab-home">
+      <span class="tab-icon">🏠</span>ホーム
+    </button>
+    <button class="tab-btn" onclick="switchTab('calendar')" id="tab-calendar">
+      <span class="tab-icon">📅</span>カレンダー
+    </button>
+    <button class="tab-btn" onclick="switchTab('todo')" id="tab-todo">
+      <span class="tab-icon">✅</span>TODO
+    </button>
+    <button class="tab-btn" onclick="switchTab('goals')" id="tab-goals">
+      <span class="tab-icon">🎯</span>目標/リスト
+    </button>
+  </nav>
+
+  <!-- Home Tab -->
+  <div class="tab-content active" id="content-home">
+    <div class="today-card">
+      <div class="today-date" id="home-date">---</div>
+      <div class="today-shift" id="home-shift">
+        <span class="shift-badge rest">読み込み中...</span>
+      </div>
+    </div>
+    <div class="card">
+      <h2>今週のシフト</h2>
+      <div class="week-scroll" id="home-week"></div>
+    </div>
+    <div class="card">
+      <h2>未完了TODO（上位3件）</h2>
+      <div id="home-todos"><div style="color:var(--text2);font-size:0.9rem">なし</div></div>
+    </div>
+    <div class="card">
+      <h2>目標達成度</h2>
+      <div id="home-goals"><div style="color:var(--text2);font-size:0.9rem">なし</div></div>
+    </div>
+  </div>
+
+  <!-- Calendar Tab -->
+  <div class="tab-content" id="content-calendar">
+    <div class="cal-header">
+      <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+      <div class="cal-title" id="cal-title"></div>
+      <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+    </div>
+    <div class="cal-weekdays">
+      <div style="color:#ef4444">日</div><div>月</div><div>火</div>
+      <div>水</div><div>木</div><div>金</div><div style="color:#3b82f6">土</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-summary" id="cal-summary"></div>
+  </div>
+
+  <!-- TODO Tab -->
+  <div class="tab-content" id="content-todo">
+    <div class="todo-input-row">
+      <input type="text" id="todo-input" placeholder="タスクを入力..." onkeydown="if(event.key==='Enter')addTodo()">
+      <select class="prio-select" id="todo-prio">
+        <option value="high">🔴高</option>
+        <option value="mid" selected>🟡中</option>
+        <option value="low">⚪低</option>
+      </select>
+      <button class="add-btn" onclick="addTodo()">追加</button>
+    </div>
+    <div id="todo-list"></div>
+    <button class="completed-toggle" id="completed-toggle" onclick="toggleCompleted()">
+      <span id="completed-arrow">▶</span> 完了済み (<span id="completed-count">0</span>件)
+    </button>
+    <div id="completed-list" style="display:none"></div>
+  </div>
+
+  <!-- Goals & Wishlist Tab -->
+  <div class="tab-content" id="content-goals">
+    <div class="sub-tabs">
+      <button class="sub-tab active" onclick="switchSubTab('goals-pane')" id="subtab-goals-pane">🎯 目標</button>
+      <button class="sub-tab" onclick="switchSubTab('wish-pane')" id="subtab-wish-pane">🛍 ほしいもの</button>
+    </div>
+
+    <!-- Goals pane -->
+    <div id="goals-pane">
+      <div class="card">
+        <div class="form-row">
+          <input class="form-input" id="goal-title" placeholder="目標タイトル">
+          <select class="form-select" id="goal-cat">
+            <option value="仕事">仕事</option>
+            <option value="お金">お金</option>
+            <option value="健康">健康</option>
+            <option value="その他">その他</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <input class="form-input" id="goal-deadline" type="date" style="color-scheme:dark">
+          <input class="form-input" id="goal-progress" type="number" min="0" max="100" placeholder="進捗 0-100">
+        </div>
+        <button class="add-btn" style="width:100%" onclick="addGoal()">目標を追加</button>
+      </div>
+      <div id="goal-list"></div>
+    </div>
+
+    <!-- Wishlist pane -->
+    <div id="wish-pane" style="display:none">
+      <div class="card">
+        <div class="form-row">
+          <input class="form-input" id="wish-name" placeholder="品名">
+          <input class="form-input" id="wish-price" type="number" placeholder="金額(円)">
+        </div>
+        <div class="form-row">
+          <select class="form-select" id="wish-prio">
+            <option value="high">🔴 高</option>
+            <option value="mid">🟡 中</option>
+            <option value="low">⚪ 低</option>
+          </select>
+          <input class="form-input" id="wish-memo" placeholder="メモ">
+        </div>
+        <button class="add-btn" style="width:100%" onclick="addWish()">追加</button>
+      </div>
+      <div id="wish-list"></div>
+      <div class="summary-total" id="wish-total"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Shift Picker Modal -->
+<div class="modal-bg" id="shift-modal" onclick="if(event.target===this)closeShiftModal()">
+  <div class="modal-sheet">
+    <div class="modal-title" id="shift-modal-title">シフトを選択</div>
+    <div class="shift-picker">
+      <button class="shift-opt-btn s1"   onclick="setShift('1勤')">1勤<br><small>07:30〜20:00</small></button>
+      <button class="shift-opt-btn s2"   onclick="setShift('2勤')">2勤<br><small>20:00〜07:30</small></button>
+      <button class="shift-opt-btn sake" onclick="setShift('明け')">明け<br><small>翌日休養</small></button>
+      <button class="shift-opt-btn rest" onclick="setShift('休み')">休み<br><small>オフ</small></button>
+      <button class="shift-opt-btn clear" style="grid-column:span 2" onclick="setShift(null)">クリア</button>
+    </div>
+    <div class="memo-area">
+      <label>メモ</label>
+      <textarea id="shift-memo" rows="2" placeholder="メモを入力（任意）"></textarea>
+    </div>
+    <button class="modal-close-btn" onclick="closeShiftModal()">閉じる</button>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, query, where }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA1DGiJ6TShj6ZI5_j-vkR5gSKsxEfUwqA",
+  authDomain: "trade-log-c20dd.firebaseapp.com",
+  projectId: "trade-log-c20dd",
+  storageBucket: "trade-log-c20dd.firebasestorage.app",
+  messagingSenderId: "604201650756",
+  appId: "1:604201650756:web:65219ae816bac1e1574a11"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let uid = null;
+let currentTab = 'home';
+
+// ── Auth ──────────────────────────────────────
+window.signIn = () => signInWithPopup(auth, new GoogleAuthProvider());
+
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    uid = user.uid;
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    await Promise.all([loadCalendar(), loadTodos(), loadGoals(), loadWishlist()]);
+    renderHome();
+  } else {
+    uid = null;
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+// ── Tab nav ───────────────────────────────────
+window.switchTab = tab => {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('content-' + tab).classList.add('active');
+  currentTab = tab;
+  if (tab === 'home') renderHome();
+};
+
+window.switchSubTab = pane => {
+  ['goals-pane','wish-pane'].forEach(p => document.getElementById(p).style.display = 'none');
+  ['subtab-goals-pane','subtab-wish-pane'].forEach(b => document.getElementById(b).classList.remove('active'));
+  document.getElementById(pane).style.display = 'block';
+  document.getElementById('subtab-' + pane).classList.add('active');
+};
+
+// ── Calendar ──────────────────────────────────
+const SHIFTS = { '1勤':'shift-1','2勤':'shift-2','明け':'shift-ake','休み':'shift-rest' };
+const SHIFT_LABELS = { '1勤':'1勤','2勤':'2勤','明け':'明け','休み':'休み' };
+let calYear, calMonth;
+let shiftData = {};   // { 'YYYY-MM': { '1':'1勤', ... } }
+let shiftMemoData = {}; // { 'YYYY-MM': { '1':'memo', ... } }
+let selectedDay = null;
+const today = new Date();
+
+async function loadCalendar() {
+  calYear = today.getFullYear();
+  calMonth = today.getMonth() + 1;
+  await fetchShiftMonth(calYear, calMonth);
+  renderCalendar();
+}
+
+async function fetchShiftMonth(y, m) {
+  const key = `${y}-${String(m).padStart(2,'0')}`;
+  if (shiftData[key]) return;
+  const ref = doc(db, 'shifts', uid, 'months', key);
+  const snap = await getDoc(ref);
+  shiftData[key] = snap.exists() ? (snap.data().days || {}) : {};
+  shiftMemoData[key] = snap.exists() ? (snap.data().memos || {}) : {};
+}
+
+async function saveShiftMonth(y, m) {
+  const key = `${y}-${String(m).padStart(2,'0')}`;
+  const ref = doc(db, 'shifts', uid, 'months', key);
+  await setDoc(ref, { days: shiftData[key] || {}, memos: shiftMemoData[key] || {} });
+}
+
+function getMonthKey(y, m) { return `${y}-${String(m).padStart(2,'0')}`; }
+
+function renderCalendar() {
+  const key = getMonthKey(calYear, calMonth);
+  const days = shiftData[key] || {};
+  const memos = shiftMemoData[key] || {};
+
+  document.getElementById('cal-title').textContent = `${calYear}年 ${calMonth}月`;
+
+  const firstDay = new Date(calYear, calMonth - 1, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth, 0).getDate();
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  for (let i = 0; i < firstDay; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-cell empty';
+    grid.appendChild(el);
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const el = document.createElement('div');
+    const shift = days[String(d)];
+    el.className = 'cal-cell' + (shift ? ' ' + SHIFTS[shift] : '');
+
+    const isToday = calYear === today.getFullYear() && calMonth === today.getMonth()+1 && d === today.getDate();
+    if (isToday) el.classList.add('today-cell');
+
+    el.innerHTML = `<span class="cell-date">${d}</span>`;
+    if (shift) el.innerHTML += `<span class="cell-shift">${shift}</span>`;
+    if (memos[String(d)]) el.innerHTML += `<span class="cell-memo-dot"></span>`;
+
+    el.onclick = () => openShiftModal(d, shift, memos[String(d)] || '');
+    grid.appendChild(el);
+  }
+
+  renderCalSummary(days);
+}
+
+function renderCalSummary(days) {
+  const counts = { '1勤':0, '2勤':0, '明け':0, '休み':0 };
+  Object.values(days).forEach(s => { if (counts[s] !== undefined) counts[s]++; });
+  const el = document.getElementById('cal-summary');
+  el.innerHTML = Object.entries(counts).map(([k, v]) =>
+    `<div class="cal-sum-item">${k} <span>${v}日</span></div>`
+  ).join('');
+}
+
+window.calNav = async dir => {
+  calMonth += dir;
+  if (calMonth > 12) { calMonth = 1; calYear++; }
+  if (calMonth < 1)  { calMonth = 12; calYear--; }
+  await fetchShiftMonth(calYear, calMonth);
+  renderCalendar();
+};
+
+window.openShiftModal = (d, currentShift, currentMemo) => {
+  selectedDay = d;
+  document.getElementById('shift-modal-title').textContent =
+    `${calYear}年${calMonth}月${d}日 シフト`;
+  document.getElementById('shift-memo').value = currentMemo;
+  document.getElementById('shift-modal').classList.add('open');
+};
+
+window.closeShiftModal = () => {
+  document.getElementById('shift-modal').classList.remove('open');
+  selectedDay = null;
+};
+
+window.setShift = async shift => {
+  const key = getMonthKey(calYear, calMonth);
+  const memo = document.getElementById('shift-memo').value.trim();
+
+  if (!shiftData[key]) shiftData[key] = {};
+  if (!shiftMemoData[key]) shiftMemoData[key] = {};
+
+  if (shift === null) {
+    delete shiftData[key][String(selectedDay)];
+    delete shiftMemoData[key][String(selectedDay)];
+  } else {
+    shiftData[key][String(selectedDay)] = shift;
+    if (memo) shiftMemoData[key][String(selectedDay)] = memo;
+    else delete shiftMemoData[key][String(selectedDay)];
+
+    // 2勤 → 翌日を自動で「明け」に
+    if (shift === '2勤') {
+      const daysInMonth = new Date(calYear, calMonth, 0).getDate();
+      if (selectedDay < daysInMonth) {
+        shiftData[key][String(selectedDay + 1)] = '明け';
+      } else {
+        // 翌月1日
+        const nextY = calMonth === 12 ? calYear + 1 : calYear;
+        const nextM = calMonth === 12 ? 1 : calMonth + 1;
+        await fetchShiftMonth(nextY, nextM);
+        const nextKey = getMonthKey(nextY, nextM);
+        if (!shiftData[nextKey]) shiftData[nextKey] = {};
+        shiftData[nextKey]['1'] = '明け';
+        await saveShiftMonth(nextY, nextM);
+      }
+    }
+  }
+
+  await saveShiftMonth(calYear, calMonth);
+  closeShiftModal();
+  renderCalendar();
+};
+
+// ── TODO ──────────────────────────────────────
+let todos = [];
+let showCompleted = false;
+
+async function loadTodos() {
+  const ref = collection(db, 'todos', uid, 'items');
+  const snap = await getDocs(ref);
+  todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderTodos();
+}
+
+function renderTodos() {
+  const active = todos.filter(t => !t.done);
+  const done   = todos.filter(t => t.done);
+
+  const listEl = document.getElementById('todo-list');
+  listEl.innerHTML = active.length ? active.map(t => todoHTML(t)).join('') : '<div style="color:var(--text2);font-size:0.9rem;padding:8px 0">なし</div>';
+
+  document.getElementById('completed-count').textContent = done.length;
+  const completedEl = document.getElementById('completed-list');
+  completedEl.innerHTML = done.map(t => todoHTML(t)).join('');
+}
+
+function todoHTML(t) {
+  const prioClass = t.priority === 'high' ? 'prio-high' : t.priority === 'mid' ? 'prio-mid' : 'prio-low';
+  return `<div class="todo-item">
+    <button class="todo-check ${t.done?'done':''}" onclick="toggleTodo('${t.id}')">${t.done?'✓':''}</button>
+    <span class="prio-dot ${prioClass}"></span>
+    <span class="todo-text ${t.done?'done':''}">${escHtml(t.text)}</span>
+    <button class="todo-del" onclick="deleteTodo('${t.id}')">🗑</button>
+  </div>`;
+}
+
+window.addTodo = async () => {
+  const text = document.getElementById('todo-input').value.trim();
+  if (!text) return;
+  const priority = document.getElementById('todo-prio').value;
+  const ref = await addDoc(collection(db, 'todos', uid, 'items'), {
+    text, priority, done: false, createdAt: Date.now()
+  });
+  todos.unshift({ id: ref.id, text, priority, done: false });
+  document.getElementById('todo-input').value = '';
+  renderTodos();
+};
+
+window.toggleTodo = async id => {
+  const t = todos.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  await updateDoc(doc(db, 'todos', uid, 'items', id), { done: t.done });
+  renderTodos();
+};
+
+window.deleteTodo = async id => {
+  todos = todos.filter(x => x.id !== id);
+  await deleteDoc(doc(db, 'todos', uid, 'items', id));
+  renderTodos();
+};
+
+window.toggleCompleted = () => {
+  showCompleted = !showCompleted;
+  document.getElementById('completed-list').style.display = showCompleted ? 'block' : 'none';
+  document.getElementById('completed-arrow').textContent = showCompleted ? '▼' : '▶';
+};
+
+// ── Goals ─────────────────────────────────────
+let goals = [];
+
+async function loadGoals() {
+  const ref = collection(db, 'goals', uid, 'items');
+  const snap = await getDocs(ref);
+  goals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderGoals();
+}
+
+function renderGoals() {
+  const el = document.getElementById('goal-list');
+  el.innerHTML = goals.map(g => `
+    <div class="goal-item">
+      <div class="goal-header">
+        <div>
+          <div class="goal-title">${escHtml(g.title)}</div>
+          <div class="goal-cat">${g.category}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          ${g.deadline ? `<div class="goal-deadline">📅 ${g.deadline}</div>` : ''}
+          <button style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem" onclick="deleteGoal('${g.id}')">🗑</button>
+        </div>
+      </div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${g.progress||0}%"></div></div>
+      <div class="progress-label">${g.progress||0}%</div>
+      <input type="range" min="0" max="100" value="${g.progress||0}"
+        style="width:100%;margin-top:8px;accent-color:var(--accent)"
+        oninput="updateGoalProgress('${g.id}', this.value)">
+    </div>
+  `).join('') || '<div style="color:var(--text2);font-size:0.9rem">目標なし</div>';
+}
+
+window.addGoal = async () => {
+  const title = document.getElementById('goal-title').value.trim();
+  if (!title) return;
+  const data = {
+    title,
+    category: document.getElementById('goal-cat').value,
+    deadline: document.getElementById('goal-deadline').value,
+    progress: Number(document.getElementById('goal-progress').value) || 0,
+    createdAt: Date.now()
+  };
+  const ref = await addDoc(collection(db, 'goals', uid, 'items'), data);
+  goals.push({ id: ref.id, ...data });
+  document.getElementById('goal-title').value = '';
+  document.getElementById('goal-deadline').value = '';
+  document.getElementById('goal-progress').value = '';
+  renderGoals();
+};
+
+window.updateGoalProgress = async (id, val) => {
+  const g = goals.find(x => x.id === id);
+  if (!g) return;
+  g.progress = Number(val);
+  await updateDoc(doc(db, 'goals', uid, 'items', id), { progress: g.progress });
+  renderGoals();
+};
+
+window.deleteGoal = async id => {
+  goals = goals.filter(x => x.id !== id);
+  await deleteDoc(doc(db, 'goals', uid, 'items', id));
+  renderGoals();
+};
+
+// ── Wishlist ──────────────────────────────────
+let wishes = [];
+
+async function loadWishlist() {
+  const ref = collection(db, 'wishlist', uid, 'items');
+  const snap = await getDocs(ref);
+  wishes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderWishlist();
+}
+
+function renderWishlist() {
+  const el = document.getElementById('wish-list');
+  el.innerHTML = wishes.map(w => {
+    const prioLabel = w.priority === 'high' ? '🔴高' : w.priority === 'mid' ? '🟡中' : '⚪低';
+    const prioClass = w.priority || 'low';
+    return `<div class="wish-item">
+      <button class="wish-check ${w.bought?'bought':''}" onclick="toggleWish('${w.id}')">${w.bought?'✓':''}</button>
+      <div class="wish-info">
+        <div class="wish-name ${w.bought?'bought':''}">${escHtml(w.name)}</div>
+        <div class="wish-price">${w.price ? '¥' + Number(w.price).toLocaleString() : ''}${w.memo ? ' · ' + escHtml(w.memo) : ''}</div>
+      </div>
+      <span class="wish-prio ${prioClass}">${prioLabel}</span>
+      <button style="background:none;border:none;color:var(--text2);cursor:pointer" onclick="deleteWish('${w.id}')">🗑</button>
+    </div>`;
+  }).join('') || '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
+
+  const total = wishes.filter(w => !w.bought && w.price).reduce((s, w) => s + Number(w.price), 0);
+  document.getElementById('wish-total').textContent = total > 0 ? `未購入合計: ¥${total.toLocaleString()}` : '';
+}
+
+window.addWish = async () => {
+  const name = document.getElementById('wish-name').value.trim();
+  if (!name) return;
+  const data = {
+    name,
+    price: document.getElementById('wish-price').value || '',
+    priority: document.getElementById('wish-prio').value,
+    memo: document.getElementById('wish-memo').value.trim(),
+    bought: false,
+    createdAt: Date.now()
+  };
+  const ref = await addDoc(collection(db, 'wishlist', uid, 'items'), data);
+  wishes.push({ id: ref.id, ...data });
+  document.getElementById('wish-name').value = '';
+  document.getElementById('wish-price').value = '';
+  document.getElementById('wish-memo').value = '';
+  renderWishlist();
+};
+
+window.toggleWish = async id => {
+  const w = wishes.find(x => x.id === id);
+  if (!w) return;
+  w.bought = !w.bought;
+  await updateDoc(doc(db, 'wishlist', uid, 'items', id), { bought: w.bought });
+  renderWishlist();
+};
+
+window.deleteWish = async id => {
+  wishes = wishes.filter(x => x.id !== id);
+  await deleteDoc(doc(db, 'wishlist', uid, 'items', id));
+  renderWishlist();
+};
+
+// ── Home rendering ────────────────────────────
+async function renderHome() {
+  const dayNames = ['日','月','火','水','木','金','土'];
+  const now = new Date();
+
+  // 今日の日付
+  document.getElementById('home-date').textContent =
+    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dayNames[now.getDay()]}）`;
+
+  // 今日のシフト
+  const key = getMonthKey(now.getFullYear(), now.getMonth()+1);
+  await fetchShiftMonth(now.getFullYear(), now.getMonth()+1);
+  const todayShift = (shiftData[key] || {})[String(now.getDate())];
+  const shiftEl = document.getElementById('home-shift');
+  if (todayShift) {
+    const cls = SHIFTS[todayShift];
+    shiftEl.innerHTML = `<span class="shift-badge ${cls.replace('shift-','s').replace('shift-ake','sake').replace('shift-rest','rest')}">${todayShift}</span>`;
+  } else {
+    shiftEl.innerHTML = `<span class="shift-badge rest">未入力</span>`;
+  }
+
+  // 今週シフト
+  const weekEl = document.getElementById('home-week');
+  weekEl.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - now.getDay() + i);
+    const wKey = getMonthKey(d.getFullYear(), d.getMonth()+1);
+    await fetchShiftMonth(d.getFullYear(), d.getMonth()+1);
+    const ws = (shiftData[wKey] || {})[String(d.getDate())];
+    const isToday = d.toDateString() === now.toDateString();
+    const cls = ws ? SHIFTS[ws] : '';
+    const card = document.createElement('div');
+    card.className = 'week-day-card' + (isToday ? ' today' : '');
+    card.innerHTML = `<div class="wd">${dayNames[i]}</div><div class="wdate">${d.getDate()}</div><div class="wshift" style="color:${ws?'':'var(--text2)'}">${ws||'―'}</div>`;
+    weekEl.appendChild(card);
+  }
+
+  // 未完了TODO上位3件
+  const pending = todos.filter(t => !t.done).slice(0, 3);
+  const todoEl = document.getElementById('home-todos');
+  todoEl.innerHTML = pending.length
+    ? pending.map(t => {
+        const prioClass = t.priority === 'high' ? 'prio-high' : t.priority === 'mid' ? 'prio-mid' : 'prio-low';
+        return `<div class="todo-preview-item"><span class="prio-dot ${prioClass}"></span>${escHtml(t.text)}</div>`;
+      }).join('')
+    : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
+
+  // 目標達成度
+  const goalEl = document.getElementById('home-goals');
+  goalEl.innerHTML = goals.length
+    ? goals.slice(0, 3).map(g => `
+        <div style="margin-bottom:10px">
+          <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px">
+            <span>${escHtml(g.title)}</span><span style="color:var(--text2)">${g.progress||0}%</span>
+          </div>
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${g.progress||0}%"></div></div>
+        </div>`
+    ).join('')
+    : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
+}
+
+// ── Util ──────────────────────────────────────
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+</script>
+</body>
+</html>

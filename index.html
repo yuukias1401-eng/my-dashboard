@@ -8,12 +8,12 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0f172a;
-  --surface: #1e293b;
-  --surface2: #334155;
-  --border: #475569;
-  --text: #f1f5f9;
-  --text2: #94a3b8;
+  --bg: #f1f5f9;
+  --surface: #ffffff;
+  --surface2: #e2e8f0;
+  --border: #cbd5e1;
+  --text: #0f172a;
+  --text2: #64748b;
   --accent: #3b82f6;
   --danger: #ef4444;
   --success: #22c55e;
@@ -32,58 +32,31 @@ body {
   flex-direction: column;
 }
 
-/* ── Auth ── */
 #auth-screen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  gap: 20px;
-  padding: 20px;
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 100vh; gap: 20px; padding: 20px;
 }
 #auth-screen h1 { font-size: 1.8rem; }
 #auth-screen p { color: var(--text2); font-size: 0.9rem; }
 .btn-google {
-  background: #fff;
-  color: #333;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  background: #fff; color: #333; border: none; border-radius: 8px;
+  padding: 12px 24px; font-size: 1rem; font-weight: 600; cursor: pointer;
+  display: flex; align-items: center; gap: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
 }
 .btn-google:hover { background: #f0f0f0; }
 
-/* ── App shell ── */
 #app { display: none; flex-direction: column; min-height: 100vh; }
 
 .tab-nav {
-  display: flex;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  display: flex; background: var(--surface); border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
 }
 .tab-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  color: var(--text2);
-  padding: 12px 4px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  border-bottom: 2px solid transparent;
-  transition: color 0.15s, border-color 0.15s;
+  flex: 1; background: none; border: none; color: var(--text2);
+  padding: 12px 4px; font-size: 0.75rem; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s;
 }
 .tab-btn .tab-icon { font-size: 1.3rem; }
 .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
@@ -91,382 +64,145 @@ body {
 .tab-content { display: none; flex: 1; padding: 16px; max-width: 600px; width: 100%; margin: 0 auto; }
 .tab-content.active { display: block; }
 
-/* ── Common ── */
-.card {
-  background: var(--surface);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 12px;
-}
+.card { background: var(--surface); border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
 .card h2 { font-size: 1rem; color: var(--text2); margin-bottom: 12px; }
-.section-title {
-  font-size: 0.85rem;
-  color: var(--text2);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 16px 0 8px;
-}
 
-/* ── Home tab ── */
 .today-card {
-  background: linear-gradient(135deg, var(--surface), var(--surface2));
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 12px;
+  background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+  border-radius: 12px; padding: 20px; margin-bottom: 12px;
 }
 .today-date { font-size: 1.5rem; font-weight: 700; }
 .today-shift { margin-top: 8px; font-size: 1rem; }
-.shift-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-.shift-badge.s1      { background: var(--shift1); color: #000; }
-.shift-badge.s2      { background: var(--shift2); color: #fff; }
-.shift-badge.sake    { background: var(--shiftake); color: #fff; }
-.shift-badge.rest    { background: var(--shiftrest); color: #fff; }
-.shift-badge.s-yukyu  { background: #10b981; color: #fff; }
-.shift-badge.s-1sup   { background: #f97316; color: #fff; }
-.shift-badge.s-2sup   { background: #60a5fa; color: #000; }
-.shift-badge.s-nisspe { background: #14b8a6; color: #fff; }
+.shift-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; }
+.shift-badge.s1      { background: #fef3c7; color: #92400e; }
+.shift-badge.s2      { background: #dbeafe; color: #1e40af; }
+.shift-badge.sake    { background: #ede9fe; color: #5b21b6; }
+.shift-badge.rest    { background: #f1f5f9; color: #475569; }
+.shift-badge.s-yukyu  { background: #d1fae5; color: #065f46; }
+.shift-badge.s-1sup   { background: #ffedd5; color: #9a3412; }
+.shift-badge.s-2sup   { background: #dbeafe; color: #1e3a8a; }
+.shift-badge.s-nisspe { background: #ccfbf1; color: #134e4a; }
 
 .week-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .week-scroll::-webkit-scrollbar { height: 4px; }
 .week-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-.week-day-card {
-  flex: 0 0 56px;
-  background: var(--surface2);
-  border-radius: 8px;
-  padding: 8px 4px;
-  text-align: center;
-  font-size: 0.75rem;
-}
+.week-day-card { flex: 0 0 56px; background: var(--surface2); border-radius: 8px; padding: 8px 4px; text-align: center; font-size: 0.75rem; }
 .week-day-card .wd { color: var(--text2); }
 .week-day-card .wdate { font-weight: 700; margin: 4px 0; font-size: 0.9rem; }
 .week-day-card .wshift { font-size: 0.65rem; font-weight: 600; }
 .week-day-card.today { border: 1px solid var(--accent); }
 
-.todo-preview-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.9rem;
-}
+.todo-preview-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 .todo-preview-item:last-child { border-bottom: none; }
 .prio-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.prio-high { background: var(--danger); }
-.prio-mid  { background: var(--shift1); }
-.prio-low  { background: var(--text2); }
 
 /* ── Calendar ── */
-.cal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.cal-nav-btn {
-  background: var(--surface2);
-  border: none;
-  color: var(--text);
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  cursor: pointer;
-}
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.cal-nav-btn { background: var(--surface2); border: none; color: var(--text); width: 36px; height: 36px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
 .cal-title { font-size: 1.1rem; font-weight: 700; }
-
-.cal-weekdays {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--text2);
-  margin-bottom: 4px;
-}
-
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 3px;
-}
+.cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; color: var(--text2); margin-bottom: 4px; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
 
 .cal-cell {
-  aspect-ratio: 1;
-  border-radius: 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 0.8rem;
-  position: relative;
-  background: var(--surface2);
-  border: 1px solid transparent;
-  transition: border-color 0.1s;
-  min-height: 44px;
+  aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;
+  position: relative; background: var(--surface2); border: 1px solid transparent;
+  transition: border-color 0.1s; min-height: 44px;
 }
 .cal-cell:hover { border-color: var(--border); }
 .cal-cell.empty { background: transparent; cursor: default; }
 .cal-cell.today-cell { border-color: var(--accent) !important; }
-.cal-cell .cell-date { font-size: 0.8rem; }
-.cal-cell .cell-shift { font-size: 0.6rem; font-weight: 700; margin-top: 2px; }
-.cal-cell .cell-memo-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text2); margin-top: 2px; }
-
-.cal-cell.shift-1      { background: #78350f; }
-.cal-cell.shift-2      { background: #1e3a5f; }
-.cal-cell.shift-ake    { background: #3b1f6b; }
-.cal-cell.shift-rest   { background: #1e293b; }
-.cal-cell.shift-yukyu  { background: #054a30; }
-.cal-cell.shift-1sup   { background: #431407; }
-.cal-cell.shift-2sup   { background: #172554; }
-.cal-cell.shift-nisspe { background: #042f2e; }
-
-.cal-summary {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 12px;
+.cal-cell .cell-date { font-size: 0.8rem; color: inherit; }
+.cal-cell .cell-shift { font-size: 0.6rem; font-weight: 700; margin-top: 2px; color: inherit; }
+.cal-cell .cell-event-dot {
+  position: absolute; top: 3px; right: 3px;
+  width: 8px; height: 8px; border-radius: 50%; background: #f97316;
 }
-.cal-sum-item {
-  background: var(--surface2);
-  border-radius: 6px;
-  padding: 6px 10px;
-  font-size: 0.8rem;
-  display: flex;
-  gap: 6px;
-}
+
+.cal-cell.shift-1      { background: #fef3c7; color: #92400e; }
+.cal-cell.shift-2      { background: #dbeafe; color: #1e40af; }
+.cal-cell.shift-ake    { background: #ede9fe; color: #5b21b6; }
+.cal-cell.shift-rest   { background: #f1f5f9; color: #475569; }
+.cal-cell.shift-yukyu  { background: #d1fae5; color: #065f46; }
+.cal-cell.shift-1sup   { background: #ffedd5; color: #9a3412; }
+.cal-cell.shift-2sup   { background: #dbeafe; color: #1e3a8a; }
+.cal-cell.shift-nisspe { background: #ccfbf1; color: #134e4a; }
+
+.cal-summary { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.cal-sum-item { background: var(--surface2); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; display: flex; gap: 6px; }
 .cal-sum-item span { color: var(--text2); }
 
-/* Shift modal */
-.modal-bg {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 200;
-  align-items: flex-end;
-  justify-content: center;
-}
+.modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: flex-end; justify-content: center; }
 .modal-bg.open { display: flex; }
-.modal-sheet {
-  background: var(--surface);
-  border-radius: 16px 16px 0 0;
-  width: 100%;
-  max-width: 600px;
-  padding: 20px;
-  max-height: 85vh;
-  overflow-y: auto;
-}
+.modal-sheet { background: var(--surface); border-radius: 16px 16px 0 0; width: 100%; max-width: 600px; padding: 20px; max-height: 85vh; overflow-y: auto; }
 .modal-title { font-size: 1rem; font-weight: 700; }
 .shift-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.shift-opt-btn {
-  border: none;
-  border-radius: 10px;
-  padding: 12px 8px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  cursor: pointer;
-  color: #fff;
-}
-.shift-opt-btn.s1      { background: var(--shift1); color: #000; }
-.shift-opt-btn.s2      { background: var(--shift2); }
-.shift-opt-btn.sake    { background: var(--shiftake); }
-.shift-opt-btn.rest    { background: var(--shiftrest); }
+.shift-opt-btn { border: none; border-radius: 10px; padding: 12px 8px; font-size: 0.9rem; font-weight: 700; cursor: pointer; color: #fff; }
+.shift-opt-btn.s1      { background: #f59e0b; color: #000; }
+.shift-opt-btn.s2      { background: #3b82f6; }
+.shift-opt-btn.sake    { background: #a78bfa; }
+.shift-opt-btn.rest    { background: #94a3b8; }
 .shift-opt-btn.s-yukyu  { background: #10b981; }
 .shift-opt-btn.s-1sup   { background: #f97316; }
 .shift-opt-btn.s-2sup   { background: #60a5fa; color: #000; }
 .shift-opt-btn.s-nisspe { background: #14b8a6; }
 .shift-opt-btn.clear   { background: var(--surface2); color: var(--text2); grid-column: span 3; }
-.modal-close-btn {
-  width: 100%;
-  margin-top: 12px;
-  background: var(--surface2);
-  border: none;
-  color: var(--text2);
-  border-radius: 8px;
-  padding: 12px;
-  font-size: 0.95rem;
-  cursor: pointer;
-}
+.modal-close-btn { width: 100%; margin-top: 12px; background: var(--surface2); border: none; color: var(--text2); border-radius: 8px; padding: 12px; font-size: 0.95rem; cursor: pointer; }
 
 /* ── TODO ── */
 .todo-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
-.todo-input-row input {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  padding: 10px 12px;
-  font-size: 0.95rem;
-}
-.prio-select {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  padding: 0 8px;
-  font-size: 0.9rem;
-}
-.add-btn {
-  background: var(--accent);
-  border: none;
-  border-radius: 8px;
-  color: #fff;
-  padding: 10px 14px;
-  font-size: 0.95rem;
-  cursor: pointer;
-  font-weight: 600;
-}
-.todo-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
-}
+.todo-input-row input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 0.95rem; }
+.prio-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 0 8px; font-size: 0.9rem; }
+.add-btn { background: var(--accent); border: none; border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
+.todo-item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .todo-item:last-child { border-bottom: none; }
-.todo-check {
-  width: 20px; height: 20px;
-  border-radius: 50%;
-  border: 2px solid var(--border);
-  background: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  color: #fff;
-}
+.todo-item.drag-over { background: #eff6ff; border-radius: 6px; }
+.drag-handle { cursor: grab; color: var(--text2); font-size: 0.9rem; padding: 2px 2px; flex-shrink: 0; touch-action: none; user-select: none; }
+.drag-handle:active { cursor: grabbing; }
+.todo-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #fff; }
 .todo-check.done { background: var(--success); border-color: var(--success); }
 .todo-text { flex: 1; font-size: 0.9rem; }
 .todo-text.done { text-decoration: line-through; color: var(--text2); }
-.todo-del { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 1rem; padding: 4px; }
-.completed-toggle {
-  background: none; border: none; color: var(--text2);
-  font-size: 0.85rem; cursor: pointer; padding: 8px 0;
-  display: flex; align-items: center; gap: 6px;
-}
+.todo-del { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 1rem; padding: 4px; transition: color 0.15s; }
+.completed-toggle { background: none; border: none; color: var(--text2); font-size: 0.85rem; cursor: pointer; padding: 8px 0; display: flex; align-items: center; gap: 6px; }
 
 /* ── Goals 3-layer ── */
-.cat-block {
-  background: var(--surface2);
-  border-radius: 10px;
-  margin-bottom: 8px;
-  overflow: hidden;
-}
-.cat-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
+.cat-block { background: var(--surface2); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+.cat-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
 .cat-body { padding: 0 14px 10px; }
-.mid-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 0 4px;
-}
+.mid-header { display: flex; align-items: center; gap: 6px; padding: 6px 0 4px; }
 .mid-title { font-size: 0.82rem; font-weight: 600; color: var(--text2); flex: 1; }
-.task-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 5px 0 5px 16px;
-}
-.task-check {
-  width: 16px; height: 16px;
-  border-radius: 3px;
-  border: 2px solid var(--border);
-  background: none;
-  cursor: pointer;
-  flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.6rem; color: #fff;
-}
+.task-row { display: flex; align-items: center; gap: 8px; padding: 5px 0 5px 16px; }
+.task-check { width: 16px; height: 16px; border-radius: 3px; border: 2px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #fff; }
 .task-check.done { background: var(--success); border-color: var(--success); }
 .task-text { font-size: 0.88rem; flex: 1; }
-.icon-btn {
-  background: none; border: none; color: var(--text2);
-  cursor: pointer; padding: 2px 4px; font-size: 0.85rem; line-height: 1;
-}
-.inline-add {
-  display: none;
-  gap: 6px;
-  padding: 4px 0;
-}
-.inline-add input {
-  flex: 1;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  font-family: inherit;
-}
-.inline-add button {
-  background: var(--accent);
-  border: none;
-  border-radius: 6px;
-  color: #fff;
-  padding: 6px 10px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  white-space: nowrap;
-}
+.icon-btn { background: none; border: none; color: var(--text2); cursor: pointer; padding: 2px 4px; font-size: 0.85rem; line-height: 1; }
+.add-task-link { background: none; border: none; color: var(--text2); font-size: 0.8rem; cursor: pointer; padding: 4px 0 4px 16px; display: block; width: 100%; text-align: left; font-family: inherit; }
+.add-task-link:hover { color: var(--accent); }
+.inline-add { display: none; gap: 6px; padding: 4px 0; }
+.inline-add input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 8px; font-size: 0.85rem; font-family: inherit; }
+.inline-add button { background: var(--accent); border: none; border-radius: 6px; color: #fff; padding: 6px 10px; cursor: pointer; font-size: 0.8rem; white-space: nowrap; }
 
 /* Wishlist */
-.wish-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
-}
+.wish-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
 .wish-item:last-child { border-bottom: none; }
-.wish-check {
-  width: 20px; height: 20px; border-radius: 4px;
-  border: 2px solid var(--border); background: none; cursor: pointer;
-  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-  color: #fff; font-size: 0.8rem;
-}
+.wish-check { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; }
 .wish-check.bought { background: var(--success); border-color: var(--success); }
 .wish-info { flex: 1; }
 .wish-name { font-size: 0.9rem; }
 .wish-name.bought { text-decoration: line-through; color: var(--text2); }
 .wish-price { font-size: 0.8rem; color: var(--text2); }
 .wish-prio { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; }
-.wish-prio.high { background: #7f1d1d; color: #fca5a5; }
-.wish-prio.mid  { background: #78350f; color: #fcd34d; }
+.wish-prio.high { background: #fee2e2; color: #991b1b; }
+.wish-prio.mid  { background: #fef3c7; color: #92400e; }
 .wish-prio.low  { background: var(--surface2); color: var(--text2); }
 
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
-.form-input {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text); padding: 9px 12px;
-  font-size: 0.9rem; width: 100%; font-family: inherit;
-}
+.form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 12px; font-size: 0.9rem; width: 100%; font-family: inherit; }
 .form-input::placeholder { color: var(--text2); }
-.form-select {
-  background: var(--surface2); border: 1px solid var(--border);
-  border-radius: 8px; color: var(--text); padding: 9px 8px;
-  font-size: 0.9rem; width: 100%;
-}
-
+.form-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 8px; font-size: 0.9rem; width: 100%; }
 .sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-.sub-tab {
-  background: var(--surface2); border: none; border-radius: 8px;
-  color: var(--text2); padding: 8px 16px; font-size: 0.85rem; cursor: pointer;
-}
+.sub-tab { background: var(--surface2); border: none; border-radius: 8px; color: var(--text2); padding: 8px 16px; font-size: 0.85rem; cursor: pointer; }
 .sub-tab.active { background: var(--accent); color: #fff; }
 .summary-total { display: flex; justify-content: flex-end; font-size: 0.85rem; color: var(--text2); padding: 8px 0; }
 .progress-bar-wrap { background: var(--border); border-radius: 4px; height: 8px; margin: 6px 0; }
@@ -487,41 +223,22 @@ body {
 
 <div id="app">
   <nav class="tab-nav">
-    <button class="tab-btn active" onclick="switchTab('home')" id="tab-home">
-      <span class="tab-icon">🏠</span>ホーム
-    </button>
-    <button class="tab-btn" onclick="switchTab('calendar')" id="tab-calendar">
-      <span class="tab-icon">📅</span>カレンダー
-    </button>
-    <button class="tab-btn" onclick="switchTab('todo')" id="tab-todo">
-      <span class="tab-icon">✅</span>TODO
-    </button>
-    <button class="tab-btn" onclick="switchTab('goals')" id="tab-goals">
-      <span class="tab-icon">🎯</span>目標/リスト
-    </button>
+    <button class="tab-btn active" onclick="switchTab('home')" id="tab-home"><span class="tab-icon">🏠</span>ホーム</button>
+    <button class="tab-btn" onclick="switchTab('calendar')" id="tab-calendar"><span class="tab-icon">📅</span>カレンダー</button>
+    <button class="tab-btn" onclick="switchTab('todo')" id="tab-todo"><span class="tab-icon">✅</span>TODO</button>
+    <button class="tab-btn" onclick="switchTab('goals')" id="tab-goals"><span class="tab-icon">🎯</span>目標/リスト</button>
   </nav>
 
-  <!-- Home Tab -->
   <div class="tab-content active" id="content-home">
     <div class="today-card">
       <div class="today-date" id="home-date">---</div>
       <div class="today-shift" id="home-shift"><span class="shift-badge rest">読み込み中...</span></div>
     </div>
-    <div class="card">
-      <h2>今週のシフト</h2>
-      <div class="week-scroll" id="home-week"></div>
-    </div>
-    <div class="card">
-      <h2>未完了TODO（上位3件）</h2>
-      <div id="home-todos"><div style="color:var(--text2);font-size:0.9rem">なし</div></div>
-    </div>
-    <div class="card">
-      <h2>目標達成度</h2>
-      <div id="home-goals"><div style="color:var(--text2);font-size:0.9rem">なし</div></div>
-    </div>
+    <div class="card"><h2>今週のシフト</h2><div class="week-scroll" id="home-week"></div></div>
+    <div class="card"><h2>未完了TODO（上位3件）</h2><div id="home-todos"><div style="color:var(--text2);font-size:0.9rem">なし</div></div></div>
+    <div class="card"><h2>目標達成度</h2><div id="home-goals"><div style="color:var(--text2);font-size:0.9rem">なし</div></div></div>
   </div>
 
-  <!-- Calendar Tab -->
   <div class="tab-content" id="content-calendar">
     <div class="cal-header">
       <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
@@ -536,7 +253,6 @@ body {
     <div class="cal-summary" id="cal-summary"></div>
   </div>
 
-  <!-- TODO Tab -->
   <div class="tab-content" id="content-todo">
     <div class="todo-input-row">
       <input type="text" id="todo-input" placeholder="タスクを入力..." onkeydown="if(event.key==='Enter')addTodo()">
@@ -554,19 +270,15 @@ body {
     <div id="completed-list" style="display:none"></div>
   </div>
 
-  <!-- Goals & Wishlist Tab -->
   <div class="tab-content" id="content-goals">
     <div class="sub-tabs">
       <button class="sub-tab active" onclick="switchSubTab('goals-pane')" id="subtab-goals-pane">🎯 目標</button>
-      <button class="sub-tab" onclick="switchSubTab('wish-pane')" id="subtab-wish-pane">🛍 ほしい���の</button>
+      <button class="sub-tab" onclick="switchSubTab('wish-pane')" id="subtab-wish-pane">🛍 ほしいもの</button>
     </div>
-
-    <!-- Goals pane -->
     <div id="goals-pane">
       <div id="goal-categories"></div>
       <div style="display:flex;gap:6px;margin-top:12px">
-        <input id="new-cat-input" type="text" placeholder="カテゴリを追加..." class="form-input"
-          onkeydown="if(event.key==='Enter')addCategory()">
+        <input id="new-cat-input" type="text" placeholder="カテゴリを追加..." class="form-input" onkeydown="if(event.key==='Enter')addCategory()">
         <button class="add-btn" onclick="addCategory()">追加</button>
       </div>
       <div style="margin-top:16px">
@@ -576,8 +288,6 @@ body {
         <div id="achieved-list" style="display:none;margin-top:8px"></div>
       </div>
     </div>
-
-    <!-- Wishlist pane -->
     <div id="wish-pane" style="display:none">
       <div class="card">
         <div class="form-row">
@@ -586,9 +296,7 @@ body {
         </div>
         <div class="form-row">
           <select class="form-select" id="wish-prio">
-            <option value="high">🔴 高</option>
-            <option value="mid">🟡 中</option>
-            <option value="low">⚪ 低</option>
+            <option value="high">🔴 高</option><option value="mid">🟡 中</option><option value="low">⚪ 低</option>
           </select>
           <input class="form-input" id="wish-memo" placeholder="メモ">
         </div>
@@ -604,8 +312,6 @@ body {
 <div class="modal-bg" id="shift-modal" onclick="if(event.target===this)closeShiftModal()">
   <div class="modal-sheet">
     <div class="modal-title" id="shift-modal-title" style="margin-bottom:14px"></div>
-
-    <!-- Events -->
     <div style="margin-bottom:14px">
       <div style="font-size:0.82rem;color:var(--text2);font-weight:600;margin-bottom:8px">予定</div>
       <div id="event-list" style="margin-bottom:8px"></div>
@@ -615,32 +321,28 @@ body {
         <button onclick="addEvent()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;padding:7px 12px;font-size:0.85rem;cursor:pointer;font-weight:600">追加</button>
       </div>
     </div>
-
-    <!-- Shift change collapsible -->
     <button id="shift-toggle-btn" onclick="toggleShiftPicker()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:10px 14px;font-size:0.9rem;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px">シフト変更 ▼</button>
     <div id="shift-picker-area" style="display:none;margin-bottom:8px">
       <div class="shift-picker">
-        <button class="shift-opt-btn s1"       onclick="setShift('1勤')">1勤</button>
-        <button class="shift-opt-btn s2"       onclick="setShift('2勤')">2勤</button>
-        <button class="shift-opt-btn sake"     onclick="setShift('明け')">明け</button>
-        <button class="shift-opt-btn rest"     onclick="setShift('休み')">休み</button>
         <button class="shift-opt-btn s-1sup"   onclick="setShift('1勤補充')">1勤補充</button>
         <button class="shift-opt-btn s-2sup"   onclick="setShift('2勤補充')">2勤補充</button>
-        <button class="shift-opt-btn s-nisspe" onclick="setShift('日専')">日専</button>
-        <button class="shift-opt-btn s-yukyu"  onclick="setShift('有給')">有給</button>
+        <button class="shift-opt-btn sake"     onclick="setShift('明け')">明け</button>
+        <button class="shift-opt-btn s-nisspe" style="grid-column:span 3" onclick="setShift('日専')">日専</button>
+        <button class="shift-opt-btn s-yukyu"  style="grid-column:span 3" onclick="setShift('有給')">有給</button>
+        <button class="shift-opt-btn s1"       onclick="setShift('1勤')">1勤</button>
+        <button class="shift-opt-btn s2"       style="grid-column:span 2" onclick="setShift('2勤')">2勤</button>
         <button class="shift-opt-btn clear"    onclick="setShift(null)">クリア</button>
       </div>
     </div>
-
     <button class="modal-close-btn" onclick="closeShiftModal()">閉じる</button>
   </div>
 </div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc, query, where }
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, addDoc, updateDoc, deleteDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -655,11 +357,8 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 let uid = null;
-let currentTab = 'home';
 
-// ── Auth ──────────────────────────────────────
 window.signIn = () => signInWithPopup(auth, new GoogleAuthProvider());
 
 onAuthStateChanged(auth, async user => {
@@ -676,16 +375,13 @@ onAuthStateChanged(auth, async user => {
   }
 });
 
-// ── Tab nav ───────────────────────────────────
 window.switchTab = tab => {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('content-' + tab).classList.add('active');
-  currentTab = tab;
   if (tab === 'home') renderHome();
 };
-
 window.switchSubTab = pane => {
   ['goals-pane','wish-pane'].forEach(p => document.getElementById(p).style.display = 'none');
   ['subtab-goals-pane','subtab-wish-pane'].forEach(b => document.getElementById(b).classList.remove('active'));
@@ -695,20 +391,17 @@ window.switchSubTab = pane => {
 
 // ── Calendar ──────────────────────────────────
 const SHIFTS = {
-  '1勤':'shift-1', '2勤':'shift-2', '明け':'shift-ake', '休み':'shift-rest',
-  '有給':'shift-yukyu', '1勤補充':'shift-1sup', '2勤補充':'shift-2sup', '日専':'shift-nisspe'
+  '1勤':'shift-1','2勤':'shift-2','明け':'shift-ake','休み':'shift-rest',
+  '有給':'shift-yukyu','1勤補充':'shift-1sup','2勤補充':'shift-2sup','日専':'shift-nisspe'
 };
 const SHIFT_BADGE = {
-  '1勤':'s1', '2勤':'s2', '明け':'sake', '休み':'rest',
-  '有給':'s-yukyu', '1勤補充':'s-1sup', '2勤補充':'s-2sup', '日専':'s-nisspe'
+  '1勤':'s1','2勤':'s2','明け':'sake','休み':'rest',
+  '有給':'s-yukyu','1勤補充':'s-1sup','2勤補充':'s-2sup','日専':'s-nisspe'
 };
 const SHIFT_CYCLE = ['1勤','2勤','明け','1勤','2勤','明け','休み','休み'];
-const AUTOFILL_START = new Date('2026-06-05T00:00:00+09:00');
+const AUTOFILL_VERSION = 2;
 
-let calYear, calMonth;
-let shiftData = {};
-let eventData = {};
-let selectedDay = null;
+let calYear, calMonth, shiftData = {}, eventData = {}, selectedDay = null;
 const today = new Date();
 
 async function loadCalendar() {
@@ -722,17 +415,20 @@ async function loadCalendar() {
 async function autoFillShifts() {
   const flagRef = doc(db, 'shifts', uid, 'meta', 'autoFill');
   const flagSnap = await getDoc(flagRef);
-  if (flagSnap.exists() && flagSnap.data().autoFilled) return;
+  if (flagSnap.exists() && (flagSnap.data().autoFillVersion || 1) >= AUTOFILL_VERSION) return;
 
-  const end = new Date('2027-06-04T00:00:00+09:00');
+  // UTC dates to avoid timezone issues
+  const startMs = Date.UTC(2026, 5, 5);   // 2026-06-05
+  const endMs   = Date.UTC(2027, 5, 4);   // 2027-06-04
   const monthMap = {};
 
-  for (let d = new Date(AUTOFILL_START); d <= end; d.setDate(d.getDate() + 1)) {
-    const diffDays = Math.round((d - AUTOFILL_START) / 86400000);
+  for (let ms = startMs; ms <= endMs; ms += 86400000) {
+    const d = new Date(ms);
+    const diffDays = Math.round((ms - startMs) / 86400000);
     const shift = SHIFT_CYCLE[diffDays % 8];
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth()+1).padStart(2,'0')}`;
     if (!monthMap[key]) monthMap[key] = {};
-    monthMap[key][String(d.getDate())] = shift;
+    monthMap[key][String(d.getUTCDate())] = shift;
   }
 
   for (const [key, days] of Object.entries(monthMap)) {
@@ -744,22 +440,20 @@ async function autoFillShifts() {
     eventData[key] = {};
   }
 
-  await setDoc(flagRef, { autoFilled: true, filledAt: Date.now() });
+  await setDoc(flagRef, { autoFilled: true, autoFillVersion: AUTOFILL_VERSION, filledAt: Date.now() });
 }
 
 async function fetchShiftMonth(y, m) {
   const key = `${y}-${String(m).padStart(2,'0')}`;
   if (shiftData[key] !== undefined) return;
-  const ref = doc(db, 'shifts', uid, 'months', key);
-  const snap = await getDoc(ref);
+  const snap = await getDoc(doc(db, 'shifts', uid, 'months', key));
   shiftData[key] = snap.exists() ? (snap.data().days || {}) : {};
   eventData[key] = snap.exists() ? (snap.data().events || {}) : {};
 }
 
 async function saveShiftMonth(y, m) {
   const key = `${y}-${String(m).padStart(2,'0')}`;
-  const ref = doc(db, 'shifts', uid, 'months', key);
-  await setDoc(ref, { days: shiftData[key] || {}, events: eventData[key] || {} });
+  await setDoc(doc(db, 'shifts', uid, 'months', key), { days: shiftData[key] || {}, events: eventData[key] || {} });
 }
 
 function getMonthKey(y, m) { return `${y}-${String(m).padStart(2,'0')}`; }
@@ -767,21 +461,17 @@ function getMonthKey(y, m) { return `${y}-${String(m).padStart(2,'0')}`; }
 function renderCalendar() {
   const key = getMonthKey(calYear, calMonth);
   const days = shiftData[key] || {};
-  const evs = eventData[key] || {};
-
+  const evs  = eventData[key] || {};
   document.getElementById('cal-title').textContent = `${calYear}年 ${calMonth}月`;
-
   const firstDay = new Date(calYear, calMonth - 1, 1).getDay();
   const daysInMonth = new Date(calYear, calMonth, 0).getDate();
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
-
   for (let i = 0; i < firstDay; i++) {
     const el = document.createElement('div');
     el.className = 'cal-cell empty';
     grid.appendChild(el);
   }
-
   for (let d = 1; d <= daysInMonth; d++) {
     const el = document.createElement('div');
     const shift = days[String(d)];
@@ -790,21 +480,18 @@ function renderCalendar() {
     if (isToday) el.classList.add('today-cell');
     el.innerHTML = `<span class="cell-date">${d}</span>`;
     if (shift) el.innerHTML += `<span class="cell-shift">${shift}</span>`;
-    if ((evs[String(d)] || []).length > 0) el.innerHTML += `<span class="cell-memo-dot"></span>`;
+    if ((evs[String(d)] || []).length > 0) el.innerHTML += `<span class="cell-event-dot"></span>`;
     el.onclick = () => openShiftModal(d);
     grid.appendChild(el);
   }
-
   renderCalSummary(days);
 }
 
 function renderCalSummary(days) {
   const order = ['1勤','2勤','明け','休み','有給','1勤補充','2勤補充','日専'];
-  const counts = {};
-  order.forEach(s => counts[s] = 0);
+  const counts = {}; order.forEach(s => counts[s] = 0);
   Object.values(days).forEach(s => { if (counts[s] !== undefined) counts[s]++; });
-  const el = document.getElementById('cal-summary');
-  el.innerHTML = order.filter(s => counts[s] > 0).map(s =>
+  document.getElementById('cal-summary').innerHTML = order.filter(s => counts[s] > 0).map(s =>
     `<div class="cal-sum-item">${s} <span>${counts[s]}日</span></div>`
   ).join('');
 }
@@ -819,40 +506,31 @@ window.calNav = async dir => {
 
 window.openShiftModal = (d) => {
   selectedDay = d;
-  const key = getMonthKey(calYear, calMonth);
-  const shift = (shiftData[key] || {})[String(d)];
-  document.getElementById('shift-modal-title').textContent =
-    `${calYear}年${calMonth}月${d}日　${shift || '未入力'}`;
+  const shift = (shiftData[getMonthKey(calYear, calMonth)] || {})[String(d)];
+  document.getElementById('shift-modal-title').textContent = `${calYear}年${calMonth}月${d}日　${shift || '未入力'}`;
   document.getElementById('shift-picker-area').style.display = 'none';
   document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
   renderEventList();
   document.getElementById('shift-modal').classList.add('open');
 };
-
 window.closeShiftModal = () => {
   document.getElementById('shift-modal').classList.remove('open');
   selectedDay = null;
 };
-
 window.toggleShiftPicker = () => {
   const area = document.getElementById('shift-picker-area');
-  const btn = document.getElementById('shift-toggle-btn');
-  const isOpen = area.style.display !== 'none';
-  area.style.display = isOpen ? 'none' : 'block';
-  btn.textContent = isOpen ? 'シフト変更 ▼' : 'シフト変更 ��';
+  const btn  = document.getElementById('shift-toggle-btn');
+  const open = area.style.display !== 'none';
+  area.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? 'シフト変更 ▼' : 'シフト変更 ▲';
 };
-
 window.setShift = async shift => {
   const key = getMonthKey(calYear, calMonth);
   if (!shiftData[key]) shiftData[key] = {};
-  if (shift === null) {
-    delete shiftData[key][String(selectedDay)];
-  } else {
-    shiftData[key][String(selectedDay)] = shift;
-  }
+  if (shift === null) delete shiftData[key][String(selectedDay)];
+  else shiftData[key][String(selectedDay)] = shift;
   await saveShiftMonth(calYear, calMonth);
-  document.getElementById('shift-modal-title').textContent =
-    `${calYear}年${calMonth}月${selectedDay}日　${shift || '未入力'}`;
+  document.getElementById('shift-modal-title').textContent = `${calYear}年${calMonth}月${selectedDay}日　${shift || '未入力'}`;
   document.getElementById('shift-picker-area').style.display = 'none';
   document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
   renderCalendar();
@@ -860,19 +538,16 @@ window.setShift = async shift => {
 
 // ── Events ────────────────────────────────────
 function renderEventList() {
-  const key = getMonthKey(calYear, calMonth);
-  const evs = ((eventData[key] || {})[String(selectedDay)] || []);
-  const el = document.getElementById('event-list');
-  el.innerHTML = evs.length
+  const evs = ((eventData[getMonthKey(calYear, calMonth)] || {})[String(selectedDay)] || []);
+  document.getElementById('event-list').innerHTML = evs.length
     ? evs.map((ev, i) => `
         <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:0.8rem;color:var(--text2);flex-shrink:0;min-width:40px">${ev.time || ''}</span>
-          <span style="font-size:0.9rem;flex:1">${escHtml(ev.title || '')}</span>
+          <span style="font-size:0.8rem;color:var(--text2);flex-shrink:0;min-width:40px">${ev.time||''}</span>
+          <span style="font-size:0.9rem;flex:1">${escHtml(ev.title||'')}</span>
           <button onclick="deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer">🗑</button>
         </div>`).join('')
     : '<div style="color:var(--text2);font-size:0.85rem;padding:4px 0">予定なし</div>';
 }
-
 window.addEvent = async () => {
   const time = document.getElementById('event-time').value;
   const title = document.getElementById('event-title-input').value.trim();
@@ -881,36 +556,34 @@ window.addEvent = async () => {
   if (!eventData[key]) eventData[key] = {};
   if (!eventData[key][String(selectedDay)]) eventData[key][String(selectedDay)] = [];
   eventData[key][String(selectedDay)].push({ time, title });
-  eventData[key][String(selectedDay)].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  eventData[key][String(selectedDay)].sort((a,b) => (a.time||'').localeCompare(b.time||''));
   document.getElementById('event-time').value = '';
   document.getElementById('event-title-input').value = '';
   await saveShiftMonth(calYear, calMonth);
-  renderEventList();
-  renderCalendar();
+  renderEventList(); renderCalendar();
 };
-
 window.deleteEvent = async idx => {
   const key = getMonthKey(calYear, calMonth);
-  if (!(eventData[key] || {})[String(selectedDay)]) return;
+  if (!(eventData[key]||{})[String(selectedDay)]) return;
   eventData[key][String(selectedDay)].splice(idx, 1);
   await saveShiftMonth(calYear, calMonth);
-  renderEventList();
-  renderCalendar();
+  renderEventList(); renderCalendar();
 };
 
 // ── TODO ──────────────────────────────────────
-let todos = [];
-let showCompleted = false;
+let todos = [], showCompleted = false;
+let dragSrcId = null, touchDragId = null, touchDragEl = null;
+let longPressTimer = null, longPressBtn = null;
 
 async function loadTodos() {
-  const ref = collection(db, 'todos', uid, 'items');
-  const snap = await getDocs(ref);
+  const snap = await getDocs(collection(db, 'todos', uid, 'items'));
   todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  todos.filter(t => !t.done).forEach((t, i) => { if (t.order === undefined) t.order = i; });
   renderTodos();
 }
 
 function renderTodos() {
-  const active = todos.filter(t => !t.done);
+  const active = todos.filter(t => !t.done).sort((a,b) => (a.order||0)-(b.order||0));
   const done   = todos.filter(t => t.done);
   const listEl = document.getElementById('todo-list');
   listEl.innerHTML = active.length
@@ -921,12 +594,19 @@ function renderTodos() {
 }
 
 function todoHTML(t) {
-  const prioClass = t.priority === 'high' ? 'prio-high' : t.priority === 'mid' ? 'prio-mid' : 'prio-low';
-  return `<div class="todo-item">
+  const prioColor = t.priority === 'high' ? '#ef4444' : t.priority === 'mid' ? '#f59e0b' : '#94a3b8';
+  return `<div class="todo-item" draggable="true" data-id="${t.id}"
+    ondragstart="onDragStart(event,'${t.id}')"
+    ondragover="onDragOver(event,'${t.id}')"
+    ondrop="onDrop(event,'${t.id}')"
+    ondragend="onDragEnd()">
+    <span class="drag-handle" ontouchstart="onTouchStart(event,'${t.id}')">☰</span>
     <button class="todo-check ${t.done?'done':''}" onclick="toggleTodo('${t.id}')">${t.done?'✓':''}</button>
-    <span class="prio-dot ${prioClass}"></span>
+    <span class="prio-dot" style="background:${prioColor};cursor:pointer;width:8px;height:8px;border-radius:50%;flex-shrink:0" onclick="cyclePriority('${t.id}')"></span>
     <span class="todo-text ${t.done?'done':''}">${escHtml(t.text)}</span>
-    <button class="todo-del" onclick="deleteTodo('${t.id}')">🗑</button>
+    <button class="todo-del" data-del-id="${t.id}"
+      onmousedown="startLongPress('${t.id}',this)" onmouseup="cancelLongPress()" onmouseleave="cancelLongPress()"
+      ontouchstart="startLongPress('${t.id}',this)" ontouchend="cancelLongPress()" ontouchcancel="cancelLongPress()">🗑</button>
   </div>`;
 }
 
@@ -934,97 +614,162 @@ window.addTodo = async () => {
   const text = document.getElementById('todo-input').value.trim();
   if (!text) return;
   const priority = document.getElementById('todo-prio').value;
-  const ref = await addDoc(collection(db, 'todos', uid, 'items'), { text, priority, done: false, createdAt: Date.now() });
-  todos.unshift({ id: ref.id, text, priority, done: false });
+  const order = todos.filter(t => !t.done).length;
+  const ref = await addDoc(collection(db, 'todos', uid, 'items'), { text, priority, done: false, order, createdAt: Date.now() });
+  todos.unshift({ id: ref.id, text, priority, done: false, order });
   document.getElementById('todo-input').value = '';
   renderTodos();
 };
-
 window.toggleTodo = async id => {
-  const t = todos.find(x => x.id === id);
-  if (!t) return;
+  const t = todos.find(x => x.id === id); if (!t) return;
   t.done = !t.done;
   await updateDoc(doc(db, 'todos', uid, 'items', id), { done: t.done });
   renderTodos();
 };
-
 window.deleteTodo = async id => {
   todos = todos.filter(x => x.id !== id);
   await deleteDoc(doc(db, 'todos', uid, 'items', id));
   renderTodos();
 };
-
 window.toggleCompleted = () => {
   showCompleted = !showCompleted;
   document.getElementById('completed-list').style.display = showCompleted ? 'block' : 'none';
   document.getElementById('completed-arrow').textContent = showCompleted ? '▼' : '▶';
 };
 
+// ── Priority cycle ─────────────────────────────
+window.cyclePriority = async id => {
+  const t = todos.find(x => x.id === id); if (!t || t.done) return;
+  const cycle = ['high','mid','low'];
+  t.priority = cycle[(cycle.indexOf(t.priority) + 1) % cycle.length];
+  await updateDoc(doc(db, 'todos', uid, 'items', id), { priority: t.priority });
+  renderTodos();
+};
+
+// ── Drag & drop (desktop) ─────────────────────
+window.onDragStart = (e, id) => {
+  dragSrcId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => { const el = document.querySelector(`.todo-item[data-id="${id}"]`); if (el) el.style.opacity = '0.4'; }, 0);
+};
+window.onDragOver = (e, id) => {
+  e.preventDefault();
+  document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
+  if (id !== dragSrcId) { const el = document.querySelector(`.todo-item[data-id="${id}"]`); if (el) el.classList.add('drag-over'); }
+};
+window.onDrop = async (e, id) => {
+  e.preventDefault();
+  if (dragSrcId && id !== dragSrcId) await reorderTodos(dragSrcId, id);
+};
+window.onDragEnd = () => {
+  dragSrcId = null;
+  document.querySelectorAll('.todo-item').forEach(x => { x.style.opacity = ''; x.classList.remove('drag-over'); });
+};
+
+// ── Drag & drop (touch) ───────────────────────
+window.onTouchStart = (e, id) => {
+  touchDragId = id;
+  touchDragEl = e.currentTarget.closest('.todo-item');
+  if (touchDragEl) touchDragEl.style.opacity = '0.4';
+};
+document.addEventListener('touchmove', e => {
+  if (!touchDragId) return;
+  e.preventDefault();
+  const t = e.touches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const item = el?.closest('.todo-item');
+  document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
+  if (item && item.dataset.id !== touchDragId) item.classList.add('drag-over');
+}, { passive: false });
+document.addEventListener('touchend', async e => {
+  if (!touchDragId) return;
+  const t = e.changedTouches[0];
+  const el = document.elementFromPoint(t.clientX, t.clientY);
+  const targetItem = el?.closest('.todo-item');
+  const targetId = targetItem?.dataset?.id;
+  document.querySelectorAll('.todo-item').forEach(x => { x.classList.remove('drag-over'); x.style.opacity = ''; });
+  if (touchDragEl) touchDragEl.style.opacity = '';
+  if (targetId && targetId !== touchDragId) await reorderTodos(touchDragId, targetId);
+  touchDragId = null; touchDragEl = null;
+});
+
+async function reorderTodos(fromId, toId) {
+  const active = todos.filter(t => !t.done).sort((a,b) => (a.order||0)-(b.order||0));
+  const fi = active.findIndex(t => t.id === fromId);
+  const ti = active.findIndex(t => t.id === toId);
+  if (fi === -1 || ti === -1) return;
+  const [item] = active.splice(fi, 1);
+  active.splice(ti, 0, item);
+  active.forEach((t, i) => t.order = i);
+  todos = [...active, ...todos.filter(t => t.done)];
+  await Promise.all(active.map(t => updateDoc(doc(db, 'todos', uid, 'items', t.id), { order: t.order })));
+  renderTodos();
+}
+
+// ── Long press delete ─────────────────────────
+window.startLongPress = (id, btn) => {
+  longPressBtn = btn;
+  btn.style.color = '#ef4444';
+  longPressTimer = setTimeout(async () => {
+    longPressTimer = null;
+    if (confirm('このTODOを削除しますか？')) await deleteTodo(id);
+    if (btn) btn.style.color = '';
+    longPressBtn = null;
+  }, 500);
+};
+window.cancelLongPress = () => {
+  if (longPressTimer) {
+    clearTimeout(longPressTimer); longPressTimer = null;
+    if (longPressBtn) { longPressBtn.style.color = ''; longPressBtn = null; }
+  }
+};
+
 // ── Goals 3-layer ─────────────────────────────
-let categories = [], midItems = [], tasks = [];
-let showAchieved = false;
+let categories = [], midItems = [], tasks = [], showAchieved = false;
 
 async function loadGoals() {
-  const [catSnap, midSnap, taskSnap] = await Promise.all([
+  const [cs, ms, ts] = await Promise.all([
     getDocs(collection(db, 'goals', uid, 'categories')),
     getDocs(collection(db, 'goals', uid, 'midItems')),
     getDocs(collection(db, 'goals', uid, 'tasks'))
   ]);
-  categories = catSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
-  midItems   = midSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
-  tasks      = taskSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  categories = cs.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
+  midItems   = ms.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
+  tasks      = ts.docs.map(d => ({ id: d.id, ...d.data() }));
   await initGoalsIfEmpty();
   renderGoals();
 }
 
 async function initGoalsIfEmpty() {
   if (categories.length > 0) return;
-  const initialData = [
-    { cat: '婚活', mids: [
-      { name: '自分磨き', tasks: ['ファッションを研究する','似合う服装を決める','似合う髪型をセットして維持する'] },
-      { name: '出会い',   tasks: ['ヒトオシ初期登録','ヒトオシ面談','バチェラーデート審査','街コン検討'] }
-    ]},
-    { cat: 'Python/データ分析', mids: [
-      { name: 'パンダス', tasks: ['アイデミー完了','実践で使えるようになる'] }
-    ]},
-    { cat: '副業・株', mids: [
-      { name: 'メイン', tasks: ['資産配分決める','タグ分け','旭化成株売る','短期売買を始める'] }
-    ]},
-    { cat: 'ポイ活', mids: [
-      { name: 'メイン', tasks: ['銀行ぐるぐる','支払い関係整理'] }
-    ]},
-    { cat: '仕事', mids: [
-      { name: 'メイン', tasks: ['後輩・部下との接し方改善','自分の検討事項を進める'] }
-    ]},
-    { cat: 'インプット', mids: [
-      { name: 'メイン', tasks: ['電車時間を読書に充てる','100の質問（5月で30まで）'] }
-    ]},
-    { cat: 'リフレッシュ', mids: [
-      { name: 'メイン', tasks: ['週一サウナを継続','旅行・温泉を計画する'] }
-    ]}
+  const seed = [
+    { cat:'婚活', mids:[{name:'自分磨き',tasks:['ファッションを研究する','似合う服装を決める','似合う髪型をセットして維持する']},{name:'出会い',tasks:['ヒトオシ初期登録','ヒトオシ面談','バチェラーデート審査','街コン検討']}]},
+    { cat:'Python/データ分析', mids:[{name:'パンダス',tasks:['アイデミー完了','実践で使えるようになる']}]},
+    { cat:'副業・株', mids:[{name:'メイン',tasks:['資産配分決める','タグ分け','旭化成株売る','短期売買を始める']}]},
+    { cat:'ポイ活', mids:[{name:'メイン',tasks:['銀行ぐるぐる','支払い関係整理']}]},
+    { cat:'仕事', mids:[{name:'メイン',tasks:['後輩・部下との接し方改善','自分の検討事項を進める']}]},
+    { cat:'インプット', mids:[{name:'メイン',tasks:['電車時間を読書に充てる','100の質問（5月で30まで）']}]},
+    { cat:'リフレッシュ', mids:[{name:'メイン',tasks:['週一サウナを継続','旅行・温泉を計画する']}]},
   ];
-
-  for (let ci = 0; ci < initialData.length; ci++) {
-    const c = initialData[ci];
-    const catRef = await addDoc(collection(db, 'goals', uid, 'categories'), { name: c.cat, order: ci, open: true });
-    categories.push({ id: catRef.id, name: c.cat, order: ci, open: true });
+  for (let ci = 0; ci < seed.length; ci++) {
+    const c = seed[ci];
+    const cr = await addDoc(collection(db, 'goals', uid, 'categories'), { name: c.cat, order: ci, open: true });
+    categories.push({ id: cr.id, name: c.cat, order: ci, open: true });
     for (let mi = 0; mi < c.mids.length; mi++) {
       const m = c.mids[mi];
-      const midRef = await addDoc(collection(db, 'goals', uid, 'midItems'), { categoryId: catRef.id, name: m.name, order: mi });
-      midItems.push({ id: midRef.id, categoryId: catRef.id, name: m.name, order: mi });
+      const mr = await addDoc(collection(db, 'goals', uid, 'midItems'), { categoryId: cr.id, name: m.name, order: mi });
+      midItems.push({ id: mr.id, categoryId: cr.id, name: m.name, order: mi });
       for (let ti = 0; ti < m.tasks.length; ti++) {
-        const tRef = await addDoc(collection(db, 'goals', uid, 'tasks'), { midItemId: midRef.id, text: m.tasks[ti], done: false, doneAt: null, order: ti });
-        tasks.push({ id: tRef.id, midItemId: midRef.id, text: m.tasks[ti], done: false, doneAt: null, order: ti });
+        const tr = await addDoc(collection(db, 'goals', uid, 'tasks'), { midItemId: mr.id, text: m.tasks[ti], done: false, doneAt: null, order: ti });
+        tasks.push({ id: tr.id, midItemId: mr.id, text: m.tasks[ti], done: false, doneAt: null, order: ti });
       }
     }
   }
 }
 
 function renderGoals() {
-  const el = document.getElementById('goal-categories');
   const activeTasks = tasks.filter(t => !t.done);
-
-  el.innerHTML = categories.map(cat => {
+  document.getElementById('goal-categories').innerHTML = categories.map(cat => {
     const catMids = midItems.filter(m => m.categoryId === cat.id).sort((a,b) => (a.order||0)-(b.order||0));
     const bodyHTML = cat.open ? `<div class="cat-body">
       ${catMids.map(mid => {
@@ -1032,14 +777,16 @@ function renderGoals() {
         return `<div>
           <div class="mid-header">
             <span class="mid-title">${escHtml(mid.name)}</span>
-            <button class="icon-btn" onclick="toggleAddTask('${mid.id}')">＋</button>
           </div>
           ${midTasks.map(t => `
             <div class="task-row">
               <button class="task-check" onclick="toggleTask('${t.id}')"></button>
               <span class="task-text">${escHtml(t.text)}</span>
-              <button class="icon-btn" onclick="deleteTask('${t.id}')">🗑</button>
+              <button class="icon-btn" data-del-id="${t.id}"
+                onmousedown="startTaskLongPress('${t.id}',this)" onmouseup="cancelTaskLongPress()" onmouseleave="cancelTaskLongPress()"
+                ontouchstart="startTaskLongPress('${t.id}',this)" ontouchend="cancelTaskLongPress()" ontouchcancel="cancelTaskLongPress()">🗑</button>
             </div>`).join('')}
+          <button class="add-task-link" onclick="toggleAddTask('${mid.id}')">＋ タスクを追加</button>
           <div id="add-task-${mid.id}" class="inline-add" style="padding-left:16px">
             <input id="ti-${mid.id}" type="text" placeholder="タスクを入力" onkeydown="if(event.key==='Enter')addTask('${mid.id}')">
             <button onclick="addTask('${mid.id}')">追加</button>
@@ -1057,7 +804,7 @@ function renderGoals() {
         <span>${escHtml(cat.name)}</span>
         <div style="display:flex;gap:8px;align-items:center" onclick="event.stopPropagation()">
           <button class="icon-btn" onclick="toggleAddMid('${cat.id}')" style="font-size:1rem">＋</button>
-          <span style="color:var(--text2);font-size:0.9rem">${cat.open ? '▲' : '▼'}</span>
+          <span style="color:var(--text2);font-size:0.9rem">${cat.open?'▲':'▼'}</span>
         </div>
       </div>
       ${bodyHTML}
@@ -1072,95 +819,100 @@ function renderAchieved() {
   const el = document.getElementById('achieved-list');
   if (!el) return;
   el.innerHTML = achieved.length
-    ? achieved.map(t => `
-        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:0.85rem;flex:1;text-decoration:line-through;color:var(--text2)">☑ ${escHtml(t.text)}</span>
-          <button onclick="restoreTask('${t.id}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:4px 8px;font-size:0.75rem;cursor:pointer;font-family:inherit">元に戻す</button>
-        </div>`).join('')
+    ? achieved.map(t => {
+        const mid = midItems.find(m => m.id === t.midItemId);
+        const cat = mid ? categories.find(c => c.id === mid.categoryId) : null;
+        const crumb = (cat && mid) ? `<div style="font-size:0.72rem;color:var(--text2);margin-top:2px">${escHtml(cat.name)} › ${escHtml(mid.name)}</div>` : '';
+        return `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:0.85rem;text-decoration:line-through;color:var(--text2)">☑ ${escHtml(t.text)}</div>
+            ${crumb}
+          </div>
+          <button onclick="restoreTask('${t.id}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:4px 8px;font-size:0.75rem;cursor:pointer;font-family:inherit;flex-shrink:0">元に戻す</button>
+        </div>`;
+      }).join('')
     : '<div style="color:var(--text2);font-size:0.9rem;padding:8px 0">なし</div>';
 }
 
+// ── Task long-press delete ─────────────────────
+let taskLongPressTimer = null, taskLongPressBtn = null;
+window.startTaskLongPress = (id, btn) => {
+  taskLongPressBtn = btn;
+  btn.style.color = '#ef4444';
+  taskLongPressTimer = setTimeout(async () => {
+    taskLongPressTimer = null;
+    if (confirm('このタスクを削除しますか？')) await deleteTask(id);
+    if (btn) btn.style.color = '';
+    taskLongPressBtn = null;
+  }, 500);
+};
+window.cancelTaskLongPress = () => {
+  if (taskLongPressTimer) {
+    clearTimeout(taskLongPressTimer); taskLongPressTimer = null;
+    if (taskLongPressBtn) { taskLongPressBtn.style.color = ''; taskLongPressBtn = null; }
+  }
+};
+
 window.toggleCategory = async id => {
-  const cat = categories.find(c => c.id === id);
-  if (!cat) return;
+  const cat = categories.find(c => c.id === id); if (!cat) return;
   cat.open = !cat.open;
   renderGoals();
   updateDoc(doc(db, 'goals', uid, 'categories', id), { open: cat.open }).catch(console.warn);
 };
-
 window.toggleAddMid = id => {
-  const row = document.getElementById('add-mid-' + id);
-  if (!row) return;
-  const isOpen = row.style.display === 'flex';
-  row.style.display = isOpen ? 'none' : 'flex';
-  if (!isOpen) setTimeout(() => document.getElementById('mi-' + id)?.focus(), 50);
+  const row = document.getElementById('add-mid-' + id); if (!row) return;
+  const open = row.style.display === 'flex';
+  row.style.display = open ? 'none' : 'flex';
+  if (!open) setTimeout(() => document.getElementById('mi-' + id)?.focus(), 50);
 };
-
 window.addMidItem = async catId => {
-  const input = document.getElementById('mi-' + catId);
-  if (!input) return;
-  const name = input.value.trim();
-  if (!name) return;
+  const input = document.getElementById('mi-' + catId); if (!input) return;
+  const name = input.value.trim(); if (!name) return;
   const order = midItems.filter(m => m.categoryId === catId).length;
   const ref = await addDoc(collection(db, 'goals', uid, 'midItems'), { categoryId: catId, name, order });
   midItems.push({ id: ref.id, categoryId: catId, name, order });
   renderGoals();
 };
-
 window.toggleAddTask = id => {
-  const row = document.getElementById('add-task-' + id);
-  if (!row) return;
-  const isOpen = row.style.display === 'flex';
-  row.style.display = isOpen ? 'none' : 'flex';
-  if (!isOpen) setTimeout(() => document.getElementById('ti-' + id)?.focus(), 50);
+  const row = document.getElementById('add-task-' + id); if (!row) return;
+  const open = row.style.display === 'flex';
+  row.style.display = open ? 'none' : 'flex';
+  if (!open) setTimeout(() => document.getElementById('ti-' + id)?.focus(), 50);
 };
-
 window.addTask = async midId => {
-  const input = document.getElementById('ti-' + midId);
-  if (!input) return;
-  const text = input.value.trim();
-  if (!text) return;
+  const input = document.getElementById('ti-' + midId); if (!input) return;
+  const text = input.value.trim(); if (!text) return;
   const order = tasks.filter(t => t.midItemId === midId).length;
   const ref = await addDoc(collection(db, 'goals', uid, 'tasks'), { midItemId: midId, text, done: false, doneAt: null, order });
   tasks.push({ id: ref.id, midItemId: midId, text, done: false, doneAt: null, order });
   input.value = '';
   renderGoals();
 };
-
 window.toggleTask = async id => {
-  const t = tasks.find(x => x.id === id);
-  if (!t) return;
-  t.done = !t.done;
-  t.doneAt = t.done ? Date.now() : null;
+  const t = tasks.find(x => x.id === id); if (!t) return;
+  t.done = !t.done; t.doneAt = t.done ? Date.now() : null;
   await updateDoc(doc(db, 'goals', uid, 'tasks', id), { done: t.done, doneAt: t.doneAt });
   renderGoals();
 };
-
 window.deleteTask = async id => {
   tasks = tasks.filter(x => x.id !== id);
   await deleteDoc(doc(db, 'goals', uid, 'tasks', id));
   renderGoals();
 };
-
 window.restoreTask = async id => {
-  const t = tasks.find(x => x.id === id);
-  if (!t) return;
+  const t = tasks.find(x => x.id === id); if (!t) return;
   t.done = false; t.doneAt = null;
   await updateDoc(doc(db, 'goals', uid, 'tasks', id), { done: false, doneAt: null });
   renderGoals();
 };
-
 window.addCategory = async () => {
   const input = document.getElementById('new-cat-input');
-  const name = input.value.trim();
-  if (!name) return;
-  const order = categories.length;
-  const ref = await addDoc(collection(db, 'goals', uid, 'categories'), { name, order, open: true });
-  categories.push({ id: ref.id, name, order, open: true });
+  const name = input.value.trim(); if (!name) return;
+  const ref = await addDoc(collection(db, 'goals', uid, 'categories'), { name, order: categories.length, open: true });
+  categories.push({ id: ref.id, name, order: categories.length, open: true });
   input.value = '';
   renderGoals();
 };
-
 window.toggleAchievedSection = () => {
   showAchieved = !showAchieved;
   document.getElementById('achieved-list').style.display = showAchieved ? 'block' : 'none';
@@ -1169,125 +921,84 @@ window.toggleAchievedSection = () => {
 
 // ── Wishlist ──────────────────────────────────
 let wishes = [];
-
 async function loadWishlist() {
-  const ref = collection(db, 'wishlist', uid, 'items');
-  const snap = await getDocs(ref);
+  const snap = await getDocs(collection(db, 'wishlist', uid, 'items'));
   wishes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderWishlist();
 }
-
 function renderWishlist() {
   const el = document.getElementById('wish-list');
   el.innerHTML = wishes.map(w => {
     const prioLabel = w.priority === 'high' ? '🔴高' : w.priority === 'mid' ? '🟡中' : '⚪低';
-    const prioClass = w.priority || 'low';
     return `<div class="wish-item">
       <button class="wish-check ${w.bought?'bought':''}" onclick="toggleWish('${w.id}')">${w.bought?'✓':''}</button>
       <div class="wish-info">
         <div class="wish-name ${w.bought?'bought':''}">${escHtml(w.name)}</div>
-        <div class="wish-price">${w.price ? '¥' + Number(w.price).toLocaleString() : ''}${w.memo ? ' · ' + escHtml(w.memo) : ''}</div>
+        <div class="wish-price">${w.price?'¥'+Number(w.price).toLocaleString():''}${w.memo?' · '+escHtml(w.memo):''}</div>
       </div>
-      <span class="wish-prio ${prioClass}">${prioLabel}</span>
+      <span class="wish-prio ${w.priority||'low'}">${prioLabel}</span>
       <button style="background:none;border:none;color:var(--text2);cursor:pointer" onclick="deleteWish('${w.id}')">🗑</button>
     </div>`;
   }).join('') || '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
   const total = wishes.filter(w => !w.bought && w.price).reduce((s, w) => s + Number(w.price), 0);
   document.getElementById('wish-total').textContent = total > 0 ? `未購入合計: ¥${total.toLocaleString()}` : '';
 }
-
 window.addWish = async () => {
-  const name = document.getElementById('wish-name').value.trim();
-  if (!name) return;
-  const data = {
-    name, price: document.getElementById('wish-price').value || '',
-    priority: document.getElementById('wish-prio').value,
-    memo: document.getElementById('wish-memo').value.trim(),
-    bought: false, createdAt: Date.now()
-  };
+  const name = document.getElementById('wish-name').value.trim(); if (!name) return;
+  const data = { name, price: document.getElementById('wish-price').value||'', priority: document.getElementById('wish-prio').value, memo: document.getElementById('wish-memo').value.trim(), bought: false, createdAt: Date.now() };
   const ref = await addDoc(collection(db, 'wishlist', uid, 'items'), data);
   wishes.push({ id: ref.id, ...data });
-  document.getElementById('wish-name').value = '';
-  document.getElementById('wish-price').value = '';
-  document.getElementById('wish-memo').value = '';
+  ['wish-name','wish-price','wish-memo'].forEach(id => document.getElementById(id).value = '');
   renderWishlist();
 };
-
 window.toggleWish = async id => {
-  const w = wishes.find(x => x.id === id);
-  if (!w) return;
+  const w = wishes.find(x => x.id === id); if (!w) return;
   w.bought = !w.bought;
   await updateDoc(doc(db, 'wishlist', uid, 'items', id), { bought: w.bought });
   renderWishlist();
 };
-
 window.deleteWish = async id => {
   wishes = wishes.filter(x => x.id !== id);
   await deleteDoc(doc(db, 'wishlist', uid, 'items', id));
   renderWishlist();
 };
 
-// ── Home rendering ────────────────────────────
+// ── Home ──────────────────────────────────────
 async function renderHome() {
   const dayNames = ['日','月','火','水','木','金','土'];
   const now = new Date();
-  document.getElementById('home-date').textContent =
-    `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dayNames[now.getDay()]}）`;
-
-  const key = getMonthKey(now.getFullYear(), now.getMonth()+1);
+  document.getElementById('home-date').textContent = `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dayNames[now.getDay()]}）`;
   await fetchShiftMonth(now.getFullYear(), now.getMonth()+1);
-  const todayShift = (shiftData[key] || {})[String(now.getDate())];
-  const shiftEl = document.getElementById('home-shift');
-  if (todayShift) {
-    const cls = SHIFT_BADGE[todayShift] || 'rest';
-    shiftEl.innerHTML = `<span class="shift-badge ${cls}">${todayShift}</span>`;
-  } else {
-    shiftEl.innerHTML = `<span class="shift-badge rest">未入力</span>`;
-  }
+  const todayShift = (shiftData[getMonthKey(now.getFullYear(), now.getMonth()+1)]||{})[String(now.getDate())];
+  const cls = todayShift ? (SHIFT_BADGE[todayShift]||'rest') : 'rest';
+  document.getElementById('home-shift').innerHTML = `<span class="shift-badge ${cls}">${todayShift||'未入力'}</span>`;
 
-  const weekEl = document.getElementById('home-week');
-  weekEl.innerHTML = '';
+  const weekEl = document.getElementById('home-week'); weekEl.innerHTML = '';
   for (let i = 0; i < 7; i++) {
-    const d = new Date(now);
-    d.setDate(now.getDate() - now.getDay() + i);
-    const wKey = getMonthKey(d.getFullYear(), d.getMonth()+1);
+    const d = new Date(now); d.setDate(now.getDate() - now.getDay() + i);
     await fetchShiftMonth(d.getFullYear(), d.getMonth()+1);
-    const ws = (shiftData[wKey] || {})[String(d.getDate())];
-    const isToday = d.toDateString() === now.toDateString();
+    const ws = (shiftData[getMonthKey(d.getFullYear(), d.getMonth()+1)]||{})[String(d.getDate())];
     const card = document.createElement('div');
-    card.className = 'week-day-card' + (isToday ? ' today' : '');
+    card.className = 'week-day-card' + (d.toDateString()===now.toDateString()?' today':'');
     card.innerHTML = `<div class="wd">${dayNames[i]}</div><div class="wdate">${d.getDate()}</div><div class="wshift" style="color:${ws?'':'var(--text2)'}">${ws||'―'}</div>`;
     weekEl.appendChild(card);
   }
 
-  const pending = todos.filter(t => !t.done).slice(0, 3);
+  const pending = todos.filter(t => !t.done).sort((a,b)=>(a.order||0)-(b.order||0)).slice(0,3);
   document.getElementById('home-todos').innerHTML = pending.length
-    ? pending.map(t => {
-        const prioClass = t.priority === 'high' ? 'prio-high' : t.priority === 'mid' ? 'prio-mid' : 'prio-low';
-        return `<div class="todo-preview-item"><span class="prio-dot ${prioClass}"></span>${escHtml(t.text)}</div>`;
-      }).join('')
+    ? pending.map(t => { const pc = t.priority==='high'?'prio-high':t.priority==='mid'?'prio-mid':'prio-low'; return `<div class="todo-preview-item"><span class="prio-dot ${pc}"></span>${escHtml(t.text)}</div>`; }).join('')
     : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
 
-  const goalEl = document.getElementById('home-goals');
-  goalEl.innerHTML = categories.length
-    ? categories.slice(0, 3).map(cat => {
-        const catMids = midItems.filter(m => m.categoryId === cat.id);
-        const catMidIds = new Set(catMids.map(m => m.id));
-        const catTasks = tasks.filter(t => catMidIds.has(t.midItemId));
-        const total = catTasks.length;
-        const done = catTasks.filter(t => t.done).length;
-        const pct = total > 0 ? Math.round(done / total * 100) : 0;
-        return `<div style="margin-bottom:10px">
-          <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px">
-            <span>${escHtml(cat.name)}</span><span style="color:var(--text2)">${done}/${total}</span>
-          </div>
-          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-        </div>`;
+  document.getElementById('home-goals').innerHTML = categories.length
+    ? categories.slice(0,3).map(cat => {
+        const ids = new Set(midItems.filter(m=>m.categoryId===cat.id).map(m=>m.id));
+        const ct = tasks.filter(t=>ids.has(t.midItemId));
+        const pct = ct.length>0?Math.round(ct.filter(t=>t.done).length/ct.length*100):0;
+        return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px"><span>${escHtml(cat.name)}</span><span style="color:var(--text2)">${ct.filter(t=>t.done).length}/${ct.length}</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div></div>`;
       }).join('')
     : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
 }
 
-// ── Util ──────────────────────────────────────
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }

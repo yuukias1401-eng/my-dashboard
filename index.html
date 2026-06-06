@@ -62,7 +62,6 @@ body {
 /* ── App shell ── */
 #app { display: none; flex-direction: column; min-height: 100vh; }
 
-/* Tab nav */
 .tab-nav {
   display: flex;
   background: var(--surface);
@@ -89,7 +88,6 @@ body {
 .tab-btn .tab-icon { font-size: 1.3rem; }
 .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* Tab content */
 .tab-content { display: none; flex: 1; padding: 16px; max-width: 600px; width: 100%; margin: 0 auto; }
 .tab-content.active { display: block; }
 
@@ -125,10 +123,14 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
 }
-.shift-badge.s1 { background: var(--shift1); color: #000; }
-.shift-badge.s2 { background: var(--shift2); color: #fff; }
-.shift-badge.sake { background: var(--shiftake); color: #fff; }
-.shift-badge.rest { background: var(--shiftrest); color: #fff; }
+.shift-badge.s1      { background: var(--shift1); color: #000; }
+.shift-badge.s2      { background: var(--shift2); color: #fff; }
+.shift-badge.sake    { background: var(--shiftake); color: #fff; }
+.shift-badge.rest    { background: var(--shiftrest); color: #fff; }
+.shift-badge.s-yukyu  { background: #10b981; color: #fff; }
+.shift-badge.s-1sup   { background: #f97316; color: #fff; }
+.shift-badge.s-2sup   { background: #60a5fa; color: #000; }
+.shift-badge.s-nisspe { background: #14b8a6; color: #fff; }
 
 .week-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; }
 .week-scroll::-webkit-scrollbar { height: 4px; }
@@ -216,12 +218,15 @@ body {
 .cal-cell .cell-shift { font-size: 0.6rem; font-weight: 700; margin-top: 2px; }
 .cal-cell .cell-memo-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--text2); margin-top: 2px; }
 
-.cal-cell.shift-1   { background: #78350f; }
-.cal-cell.shift-2   { background: #1e3a5f; }
-.cal-cell.shift-ake { background: #3b1f6b; }
-.cal-cell.shift-rest{ background: #1e293b; }
+.cal-cell.shift-1      { background: #78350f; }
+.cal-cell.shift-2      { background: #1e3a5f; }
+.cal-cell.shift-ake    { background: #3b1f6b; }
+.cal-cell.shift-rest   { background: #1e293b; }
+.cal-cell.shift-yukyu  { background: #054a30; }
+.cal-cell.shift-1sup   { background: #431407; }
+.cal-cell.shift-2sup   { background: #172554; }
+.cal-cell.shift-nisspe { background: #042f2e; }
 
-/* Calendar summary */
 .cal-summary {
   display: flex;
   gap: 8px;
@@ -238,7 +243,7 @@ body {
 }
 .cal-sum-item span { color: var(--text2); }
 
-/* Shift picker modal */
+/* Shift modal */
 .modal-bg {
   display: none;
   position: fixed;
@@ -255,38 +260,29 @@ body {
   width: 100%;
   max-width: 600px;
   padding: 20px;
+  max-height: 85vh;
+  overflow-y: auto;
 }
-.modal-title { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
-.shift-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.modal-title { font-size: 1rem; font-weight: 700; }
+.shift-picker { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .shift-opt-btn {
   border: none;
   border-radius: 10px;
-  padding: 16px;
-  font-size: 1rem;
+  padding: 12px 8px;
+  font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
   color: #fff;
 }
-.shift-opt-btn.s1   { background: var(--shift1); color: #000; }
-.shift-opt-btn.s2   { background: var(--shift2); }
-.shift-opt-btn.sake { background: var(--shiftake); }
-.shift-opt-btn.rest { background: var(--shiftrest); }
-.shift-opt-btn.clear { background: var(--surface2); color: var(--text2); }
-.memo-area {
-  margin-top: 14px;
-}
-.memo-area label { font-size: 0.85rem; color: var(--text2); display: block; margin-bottom: 6px; }
-.memo-area textarea {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  padding: 8px;
-  font-size: 0.9rem;
-  resize: none;
-  font-family: inherit;
-}
+.shift-opt-btn.s1      { background: var(--shift1); color: #000; }
+.shift-opt-btn.s2      { background: var(--shift2); }
+.shift-opt-btn.sake    { background: var(--shiftake); }
+.shift-opt-btn.rest    { background: var(--shiftrest); }
+.shift-opt-btn.s-yukyu  { background: #10b981; }
+.shift-opt-btn.s-1sup   { background: #f97316; }
+.shift-opt-btn.s-2sup   { background: #60a5fa; color: #000; }
+.shift-opt-btn.s-nisspe { background: #14b8a6; }
+.shift-opt-btn.clear   { background: var(--surface2); color: var(--text2); grid-column: span 3; }
 .modal-close-btn {
   width: 100%;
   margin-top: 12px;
@@ -300,11 +296,7 @@ body {
 }
 
 /* ── TODO ── */
-.todo-input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
+.todo-input-row { display: flex; gap: 8px; margin-bottom: 12px; }
 .todo-input-row input {
   flex: 1;
   background: var(--surface2);
@@ -332,7 +324,6 @@ body {
   cursor: pointer;
   font-weight: 600;
 }
-
 .todo-item {
   display: flex;
   align-items: center;
@@ -342,8 +333,7 @@ body {
 }
 .todo-item:last-child { border-bottom: none; }
 .todo-check {
-  width: 20px;
-  height: 20px;
+  width: 20px; height: 20px;
   border-radius: 50%;
   border: 2px solid var(--border);
   background: none;
@@ -358,57 +348,95 @@ body {
 .todo-check.done { background: var(--success); border-color: var(--success); }
 .todo-text { flex: 1; font-size: 0.9rem; }
 .todo-text.done { text-decoration: line-through; color: var(--text2); }
-.todo-del {
-  background: none;
-  border: none;
-  color: var(--text2);
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 4px;
-}
+.todo-del { background: none; border: none; color: var(--text2); cursor: pointer; font-size: 1rem; padding: 4px; }
 .completed-toggle {
-  background: none;
-  border: none;
-  color: var(--text2);
-  font-size: 0.85rem;
+  background: none; border: none; color: var(--text2);
+  font-size: 0.85rem; cursor: pointer; padding: 8px 0;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ── Goals 3-layer ── */
+.cat-block {
+  background: var(--surface2);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.cat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
   cursor: pointer;
-  padding: 8px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.cat-body { padding: 0 14px 10px; }
+.mid-header {
   display: flex;
   align-items: center;
   gap: 6px;
+  padding: 6px 0 4px;
 }
-
-/* ── Goals & Wishlist ── */
-.goal-item {
-  background: var(--surface2);
-  border-radius: 10px;
-  padding: 14px;
-  margin-bottom: 8px;
-}
-.goal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.goal-title { font-size: 0.95rem; font-weight: 600; }
-.goal-cat { font-size: 0.7rem; color: var(--text2); }
-.goal-deadline { font-size: 0.75rem; color: var(--text2); }
-.progress-bar-wrap { background: var(--border); border-radius: 4px; height: 8px; margin: 6px 0; }
-.progress-bar-fill { height: 8px; border-radius: 4px; background: var(--accent); transition: width 0.3s; }
-.progress-label { font-size: 0.75rem; color: var(--text2); }
-
-.wish-item {
+.mid-title { font-size: 0.82rem; font-weight: 600; color: var(--text2); flex: 1; }
+.task-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--border);
+  gap: 8px;
+  padding: 5px 0 5px 16px;
 }
-.wish-item:last-child { border-bottom: none; }
-.wish-check {
-  width: 20px; height: 20px;
-  border-radius: 4px;
+.task-check {
+  width: 16px; height: 16px;
+  border-radius: 3px;
   border: 2px solid var(--border);
   background: none;
   cursor: pointer;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
+  font-size: 0.6rem; color: #fff;
+}
+.task-check.done { background: var(--success); border-color: var(--success); }
+.task-text { font-size: 0.88rem; flex: 1; }
+.icon-btn {
+  background: none; border: none; color: var(--text2);
+  cursor: pointer; padding: 2px 4px; font-size: 0.85rem; line-height: 1;
+}
+.inline-add {
+  display: none;
+  gap: 6px;
+  padding: 4px 0;
+}
+.inline-add input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+.inline-add button {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+/* Wishlist */
+.wish-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-bottom: 1px solid var(--border);
+}
+.wish-item:last-child { border-bottom: none; }
+.wish-check {
+  width: 20px; height: 20px; border-radius: 4px;
+  border: 2px solid var(--border); background: none; cursor: pointer;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center;
   color: #fff; font-size: 0.8rem;
 }
 .wish-check.bought { background: var(--success); border-color: var(--success); }
@@ -421,61 +449,32 @@ body {
 .wish-prio.mid  { background: #78350f; color: #fcd34d; }
 .wish-prio.low  { background: var(--surface2); color: var(--text2); }
 
-/* Goal/wish form */
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 8px;
-}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .form-input {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  padding: 9px 12px;
-  font-size: 0.9rem;
-  width: 100%;
-  font-family: inherit;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); padding: 9px 12px;
+  font-size: 0.9rem; width: 100%; font-family: inherit;
 }
 .form-input::placeholder { color: var(--text2); }
 .form-select {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  padding: 9px 8px;
-  font-size: 0.9rem;
-  width: 100%;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text); padding: 9px 8px;
+  font-size: 0.9rem; width: 100%;
 }
 
 .sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
 .sub-tab {
-  background: var(--surface2);
-  border: none;
-  border-radius: 8px;
-  color: var(--text2);
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  cursor: pointer;
+  background: var(--surface2); border: none; border-radius: 8px;
+  color: var(--text2); padding: 8px 16px; font-size: 0.85rem; cursor: pointer;
 }
 .sub-tab.active { background: var(--accent); color: #fff; }
-
-.summary-total {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 0.85rem;
-  color: var(--text2);
-  padding: 8px 0;
-}
-
-/* loading */
-#loading { text-align: center; padding: 40px; color: var(--text2); }
+.summary-total { display: flex; justify-content: flex-end; font-size: 0.85rem; color: var(--text2); padding: 8px 0; }
+.progress-bar-wrap { background: var(--border); border-radius: 4px; height: 8px; margin: 6px 0; }
+.progress-bar-fill { height: 8px; border-radius: 4px; background: var(--accent); transition: width 0.3s; }
 </style>
 </head>
 <body>
 
-<!-- Auth Screen -->
 <div id="auth-screen">
   <div style="font-size:3rem">📋</div>
   <h1>My Dashboard</h1>
@@ -486,7 +485,6 @@ body {
   </button>
 </div>
 
-<!-- App -->
 <div id="app">
   <nav class="tab-nav">
     <button class="tab-btn active" onclick="switchTab('home')" id="tab-home">
@@ -507,9 +505,7 @@ body {
   <div class="tab-content active" id="content-home">
     <div class="today-card">
       <div class="today-date" id="home-date">---</div>
-      <div class="today-shift" id="home-shift">
-        <span class="shift-badge rest">読み込み中...</span>
-      </div>
+      <div class="today-shift" id="home-shift"><span class="shift-badge rest">読み込み中...</span></div>
     </div>
     <div class="card">
       <h2>今週のシフト</h2>
@@ -562,28 +558,23 @@ body {
   <div class="tab-content" id="content-goals">
     <div class="sub-tabs">
       <button class="sub-tab active" onclick="switchSubTab('goals-pane')" id="subtab-goals-pane">🎯 目標</button>
-      <button class="sub-tab" onclick="switchSubTab('wish-pane')" id="subtab-wish-pane">🛍 ほしいもの</button>
+      <button class="sub-tab" onclick="switchSubTab('wish-pane')" id="subtab-wish-pane">🛍 ほしい���の</button>
     </div>
 
     <!-- Goals pane -->
     <div id="goals-pane">
-      <div class="card">
-        <div class="form-row">
-          <input class="form-input" id="goal-title" placeholder="目標タイトル">
-          <select class="form-select" id="goal-cat">
-            <option value="仕事">仕事</option>
-            <option value="お金">お金</option>
-            <option value="健康">健康</option>
-            <option value="その他">その他</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <input class="form-input" id="goal-deadline" type="date" style="color-scheme:dark">
-          <input class="form-input" id="goal-progress" type="number" min="0" max="100" placeholder="進捗 0-100">
-        </div>
-        <button class="add-btn" style="width:100%" onclick="addGoal()">目標を追加</button>
+      <div id="goal-categories"></div>
+      <div style="display:flex;gap:6px;margin-top:12px">
+        <input id="new-cat-input" type="text" placeholder="カテゴリを追加..." class="form-input"
+          onkeydown="if(event.key==='Enter')addCategory()">
+        <button class="add-btn" onclick="addCategory()">追加</button>
       </div>
-      <div id="goal-list"></div>
+      <div style="margin-top:16px">
+        <button onclick="toggleAchievedSection()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text2);font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:inherit">
+          <span>🏆 達成済み</span><span id="achieved-arrow">▼</span>
+        </button>
+        <div id="achieved-list" style="display:none;margin-top:8px"></div>
+      </div>
     </div>
 
     <!-- Wishlist pane -->
@@ -609,26 +600,42 @@ body {
   </div>
 </div>
 
-<!-- Shift Picker Modal -->
+<!-- Shift Modal -->
 <div class="modal-bg" id="shift-modal" onclick="if(event.target===this)closeShiftModal()">
   <div class="modal-sheet">
-    <div class="modal-title" id="shift-modal-title">シフトを選択</div>
-    <div class="shift-picker">
-      <button class="shift-opt-btn s1"   onclick="setShift('1勤')">1勤<br><small>07:30〜20:00</small></button>
-      <button class="shift-opt-btn s2"   onclick="setShift('2勤')">2勤<br><small>20:00〜07:30</small></button>
-      <button class="shift-opt-btn sake" onclick="setShift('明け')">明け<br><small>翌日休養</small></button>
-      <button class="shift-opt-btn rest" onclick="setShift('休み')">休み<br><small>オフ</small></button>
-      <button class="shift-opt-btn clear" style="grid-column:span 2" onclick="setShift(null)">クリア</button>
+    <div class="modal-title" id="shift-modal-title" style="margin-bottom:14px"></div>
+
+    <!-- Events -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:0.82rem;color:var(--text2);font-weight:600;margin-bottom:8px">予定</div>
+      <div id="event-list" style="margin-bottom:8px"></div>
+      <div style="display:flex;gap:6px">
+        <input id="event-time" type="time" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 8px;font-size:0.85rem;font-family:inherit;width:96px">
+        <input id="event-title-input" type="text" placeholder="件名" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:0.85rem;font-family:inherit" onkeydown="if(event.key==='Enter')addEvent()">
+        <button onclick="addEvent()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;padding:7px 12px;font-size:0.85rem;cursor:pointer;font-weight:600">追加</button>
+      </div>
     </div>
-    <div class="memo-area">
-      <label>メモ</label>
-      <textarea id="shift-memo" rows="2" placeholder="メモを入力（任意）"></textarea>
+
+    <!-- Shift change collapsible -->
+    <button id="shift-toggle-btn" onclick="toggleShiftPicker()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:10px 14px;font-size:0.9rem;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px">シフト変更 ▼</button>
+    <div id="shift-picker-area" style="display:none;margin-bottom:8px">
+      <div class="shift-picker">
+        <button class="shift-opt-btn s1"       onclick="setShift('1勤')">1勤</button>
+        <button class="shift-opt-btn s2"       onclick="setShift('2勤')">2勤</button>
+        <button class="shift-opt-btn sake"     onclick="setShift('明け')">明け</button>
+        <button class="shift-opt-btn rest"     onclick="setShift('休み')">休み</button>
+        <button class="shift-opt-btn s-1sup"   onclick="setShift('1勤補充')">1勤補充</button>
+        <button class="shift-opt-btn s-2sup"   onclick="setShift('2勤補充')">2勤補充</button>
+        <button class="shift-opt-btn s-nisspe" onclick="setShift('日専')">日専</button>
+        <button class="shift-opt-btn s-yukyu"  onclick="setShift('有給')">有給</button>
+        <button class="shift-opt-btn clear"    onclick="setShift(null)">クリア</button>
+      </div>
     </div>
+
     <button class="modal-close-btn" onclick="closeShiftModal()">閉じる</button>
   </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut }
@@ -687,34 +694,72 @@ window.switchSubTab = pane => {
 };
 
 // ── Calendar ──────────────────────────────────
-const SHIFTS = { '1勤':'shift-1','2勤':'shift-2','明け':'shift-ake','休み':'shift-rest' };
-const SHIFT_LABELS = { '1勤':'1勤','2勤':'2勤','明け':'明け','休み':'休み' };
+const SHIFTS = {
+  '1勤':'shift-1', '2勤':'shift-2', '明け':'shift-ake', '休み':'shift-rest',
+  '有給':'shift-yukyu', '1勤補充':'shift-1sup', '2勤補充':'shift-2sup', '日専':'shift-nisspe'
+};
+const SHIFT_BADGE = {
+  '1勤':'s1', '2勤':'s2', '明け':'sake', '休み':'rest',
+  '有給':'s-yukyu', '1勤補充':'s-1sup', '2勤補充':'s-2sup', '日専':'s-nisspe'
+};
+const SHIFT_CYCLE = ['1勤','2勤','明け','1勤','2勤','明け','休み','休み'];
+const AUTOFILL_START = new Date('2026-06-05T00:00:00+09:00');
+
 let calYear, calMonth;
-let shiftData = {};   // { 'YYYY-MM': { '1':'1勤', ... } }
-let shiftMemoData = {}; // { 'YYYY-MM': { '1':'memo', ... } }
+let shiftData = {};
+let eventData = {};
 let selectedDay = null;
 const today = new Date();
 
 async function loadCalendar() {
   calYear = today.getFullYear();
   calMonth = today.getMonth() + 1;
+  await autoFillShifts();
   await fetchShiftMonth(calYear, calMonth);
   renderCalendar();
 }
 
+async function autoFillShifts() {
+  const flagRef = doc(db, 'shifts', uid, 'meta', 'autoFill');
+  const flagSnap = await getDoc(flagRef);
+  if (flagSnap.exists() && flagSnap.data().autoFilled) return;
+
+  const end = new Date('2027-06-04T00:00:00+09:00');
+  const monthMap = {};
+
+  for (let d = new Date(AUTOFILL_START); d <= end; d.setDate(d.getDate() + 1)) {
+    const diffDays = Math.round((d - AUTOFILL_START) / 86400000);
+    const shift = SHIFT_CYCLE[diffDays % 8];
+    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    if (!monthMap[key]) monthMap[key] = {};
+    monthMap[key][String(d.getDate())] = shift;
+  }
+
+  for (const [key, days] of Object.entries(monthMap)) {
+    const ref = doc(db, 'shifts', uid, 'months', key);
+    const snap = await getDoc(ref);
+    if (snap.exists() && Object.keys(snap.data().days || {}).length > 0) continue;
+    await setDoc(ref, { days, events: {} });
+    shiftData[key] = days;
+    eventData[key] = {};
+  }
+
+  await setDoc(flagRef, { autoFilled: true, filledAt: Date.now() });
+}
+
 async function fetchShiftMonth(y, m) {
   const key = `${y}-${String(m).padStart(2,'0')}`;
-  if (shiftData[key]) return;
+  if (shiftData[key] !== undefined) return;
   const ref = doc(db, 'shifts', uid, 'months', key);
   const snap = await getDoc(ref);
   shiftData[key] = snap.exists() ? (snap.data().days || {}) : {};
-  shiftMemoData[key] = snap.exists() ? (snap.data().memos || {}) : {};
+  eventData[key] = snap.exists() ? (snap.data().events || {}) : {};
 }
 
 async function saveShiftMonth(y, m) {
   const key = `${y}-${String(m).padStart(2,'0')}`;
   const ref = doc(db, 'shifts', uid, 'months', key);
-  await setDoc(ref, { days: shiftData[key] || {}, memos: shiftMemoData[key] || {} });
+  await setDoc(ref, { days: shiftData[key] || {}, events: eventData[key] || {} });
 }
 
 function getMonthKey(y, m) { return `${y}-${String(m).padStart(2,'0')}`; }
@@ -722,7 +767,7 @@ function getMonthKey(y, m) { return `${y}-${String(m).padStart(2,'0')}`; }
 function renderCalendar() {
   const key = getMonthKey(calYear, calMonth);
   const days = shiftData[key] || {};
-  const memos = shiftMemoData[key] || {};
+  const evs = eventData[key] || {};
 
   document.getElementById('cal-title').textContent = `${calYear}年 ${calMonth}月`;
 
@@ -741,15 +786,12 @@ function renderCalendar() {
     const el = document.createElement('div');
     const shift = days[String(d)];
     el.className = 'cal-cell' + (shift ? ' ' + SHIFTS[shift] : '');
-
     const isToday = calYear === today.getFullYear() && calMonth === today.getMonth()+1 && d === today.getDate();
     if (isToday) el.classList.add('today-cell');
-
     el.innerHTML = `<span class="cell-date">${d}</span>`;
     if (shift) el.innerHTML += `<span class="cell-shift">${shift}</span>`;
-    if (memos[String(d)]) el.innerHTML += `<span class="cell-memo-dot"></span>`;
-
-    el.onclick = () => openShiftModal(d, shift, memos[String(d)] || '');
+    if ((evs[String(d)] || []).length > 0) el.innerHTML += `<span class="cell-memo-dot"></span>`;
+    el.onclick = () => openShiftModal(d);
     grid.appendChild(el);
   }
 
@@ -757,11 +799,13 @@ function renderCalendar() {
 }
 
 function renderCalSummary(days) {
-  const counts = { '1勤':0, '2勤':0, '明け':0, '休み':0 };
+  const order = ['1勤','2勤','明け','休み','有給','1勤補充','2勤補充','日専'];
+  const counts = {};
+  order.forEach(s => counts[s] = 0);
   Object.values(days).forEach(s => { if (counts[s] !== undefined) counts[s]++; });
   const el = document.getElementById('cal-summary');
-  el.innerHTML = Object.entries(counts).map(([k, v]) =>
-    `<div class="cal-sum-item">${k} <span>${v}日</span></div>`
+  el.innerHTML = order.filter(s => counts[s] > 0).map(s =>
+    `<div class="cal-sum-item">${s} <span>${counts[s]}日</span></div>`
   ).join('');
 }
 
@@ -773,11 +817,15 @@ window.calNav = async dir => {
   renderCalendar();
 };
 
-window.openShiftModal = (d, currentShift, currentMemo) => {
+window.openShiftModal = (d) => {
   selectedDay = d;
+  const key = getMonthKey(calYear, calMonth);
+  const shift = (shiftData[key] || {})[String(d)];
   document.getElementById('shift-modal-title').textContent =
-    `${calYear}年${calMonth}月${d}日 シフト`;
-  document.getElementById('shift-memo').value = currentMemo;
+    `${calYear}年${calMonth}月${d}日　${shift || '未入力'}`;
+  document.getElementById('shift-picker-area').style.display = 'none';
+  document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
+  renderEventList();
   document.getElementById('shift-modal').classList.add('open');
 };
 
@@ -786,41 +834,67 @@ window.closeShiftModal = () => {
   selectedDay = null;
 };
 
+window.toggleShiftPicker = () => {
+  const area = document.getElementById('shift-picker-area');
+  const btn = document.getElementById('shift-toggle-btn');
+  const isOpen = area.style.display !== 'none';
+  area.style.display = isOpen ? 'none' : 'block';
+  btn.textContent = isOpen ? 'シフト変更 ▼' : 'シフト変更 ��';
+};
+
 window.setShift = async shift => {
   const key = getMonthKey(calYear, calMonth);
-  const memo = document.getElementById('shift-memo').value.trim();
-
   if (!shiftData[key]) shiftData[key] = {};
-  if (!shiftMemoData[key]) shiftMemoData[key] = {};
-
   if (shift === null) {
     delete shiftData[key][String(selectedDay)];
-    delete shiftMemoData[key][String(selectedDay)];
   } else {
     shiftData[key][String(selectedDay)] = shift;
-    if (memo) shiftMemoData[key][String(selectedDay)] = memo;
-    else delete shiftMemoData[key][String(selectedDay)];
-
-    // 2勤 → 翌日を自動で「明け」に
-    if (shift === '2勤') {
-      const daysInMonth = new Date(calYear, calMonth, 0).getDate();
-      if (selectedDay < daysInMonth) {
-        shiftData[key][String(selectedDay + 1)] = '明け';
-      } else {
-        // 翌月1日
-        const nextY = calMonth === 12 ? calYear + 1 : calYear;
-        const nextM = calMonth === 12 ? 1 : calMonth + 1;
-        await fetchShiftMonth(nextY, nextM);
-        const nextKey = getMonthKey(nextY, nextM);
-        if (!shiftData[nextKey]) shiftData[nextKey] = {};
-        shiftData[nextKey]['1'] = '明け';
-        await saveShiftMonth(nextY, nextM);
-      }
-    }
   }
-
   await saveShiftMonth(calYear, calMonth);
-  closeShiftModal();
+  document.getElementById('shift-modal-title').textContent =
+    `${calYear}年${calMonth}月${selectedDay}日　${shift || '未入力'}`;
+  document.getElementById('shift-picker-area').style.display = 'none';
+  document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
+  renderCalendar();
+};
+
+// ── Events ────────────────────────────────────
+function renderEventList() {
+  const key = getMonthKey(calYear, calMonth);
+  const evs = ((eventData[key] || {})[String(selectedDay)] || []);
+  const el = document.getElementById('event-list');
+  el.innerHTML = evs.length
+    ? evs.map((ev, i) => `
+        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:0.8rem;color:var(--text2);flex-shrink:0;min-width:40px">${ev.time || ''}</span>
+          <span style="font-size:0.9rem;flex:1">${escHtml(ev.title || '')}</span>
+          <button onclick="deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer">🗑</button>
+        </div>`).join('')
+    : '<div style="color:var(--text2);font-size:0.85rem;padding:4px 0">予定なし</div>';
+}
+
+window.addEvent = async () => {
+  const time = document.getElementById('event-time').value;
+  const title = document.getElementById('event-title-input').value.trim();
+  if (!title) return;
+  const key = getMonthKey(calYear, calMonth);
+  if (!eventData[key]) eventData[key] = {};
+  if (!eventData[key][String(selectedDay)]) eventData[key][String(selectedDay)] = [];
+  eventData[key][String(selectedDay)].push({ time, title });
+  eventData[key][String(selectedDay)].sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+  document.getElementById('event-time').value = '';
+  document.getElementById('event-title-input').value = '';
+  await saveShiftMonth(calYear, calMonth);
+  renderEventList();
+  renderCalendar();
+};
+
+window.deleteEvent = async idx => {
+  const key = getMonthKey(calYear, calMonth);
+  if (!(eventData[key] || {})[String(selectedDay)]) return;
+  eventData[key][String(selectedDay)].splice(idx, 1);
+  await saveShiftMonth(calYear, calMonth);
+  renderEventList();
   renderCalendar();
 };
 
@@ -838,13 +912,12 @@ async function loadTodos() {
 function renderTodos() {
   const active = todos.filter(t => !t.done);
   const done   = todos.filter(t => t.done);
-
   const listEl = document.getElementById('todo-list');
-  listEl.innerHTML = active.length ? active.map(t => todoHTML(t)).join('') : '<div style="color:var(--text2);font-size:0.9rem;padding:8px 0">なし</div>';
-
+  listEl.innerHTML = active.length
+    ? active.map(t => todoHTML(t)).join('')
+    : '<div style="color:var(--text2);font-size:0.9rem;padding:8px 0">なし</div>';
   document.getElementById('completed-count').textContent = done.length;
-  const completedEl = document.getElementById('completed-list');
-  completedEl.innerHTML = done.map(t => todoHTML(t)).join('');
+  document.getElementById('completed-list').innerHTML = done.map(t => todoHTML(t)).join('');
 }
 
 function todoHTML(t) {
@@ -861,9 +934,7 @@ window.addTodo = async () => {
   const text = document.getElementById('todo-input').value.trim();
   if (!text) return;
   const priority = document.getElementById('todo-prio').value;
-  const ref = await addDoc(collection(db, 'todos', uid, 'items'), {
-    text, priority, done: false, createdAt: Date.now()
-  });
+  const ref = await addDoc(collection(db, 'todos', uid, 'items'), { text, priority, done: false, createdAt: Date.now() });
   todos.unshift({ id: ref.id, text, priority, done: false });
   document.getElementById('todo-input').value = '';
   renderTodos();
@@ -889,69 +960,211 @@ window.toggleCompleted = () => {
   document.getElementById('completed-arrow').textContent = showCompleted ? '▼' : '▶';
 };
 
-// ── Goals ─────────────────────────────────────
-let goals = [];
+// ── Goals 3-layer ─────────────────────────────
+let categories = [], midItems = [], tasks = [];
+let showAchieved = false;
 
 async function loadGoals() {
-  const ref = collection(db, 'goals', uid, 'items');
-  const snap = await getDocs(ref);
-  goals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  const [catSnap, midSnap, taskSnap] = await Promise.all([
+    getDocs(collection(db, 'goals', uid, 'categories')),
+    getDocs(collection(db, 'goals', uid, 'midItems')),
+    getDocs(collection(db, 'goals', uid, 'tasks'))
+  ]);
+  categories = catSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
+  midItems   = midSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
+  tasks      = taskSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+  await initGoalsIfEmpty();
   renderGoals();
+}
+
+async function initGoalsIfEmpty() {
+  if (categories.length > 0) return;
+  const initialData = [
+    { cat: '婚活', mids: [
+      { name: '自分磨き', tasks: ['ファッションを研究する','似合う服装を決める','似合う髪型をセットして維持する'] },
+      { name: '出会い',   tasks: ['ヒトオシ初期登録','ヒトオシ面談','バチェラーデート審査','街コン検討'] }
+    ]},
+    { cat: 'Python/データ分析', mids: [
+      { name: 'パンダス', tasks: ['アイデミー完了','実践で使えるようになる'] }
+    ]},
+    { cat: '副業・株', mids: [
+      { name: 'メイン', tasks: ['資産配分決める','タグ分け','旭化成株売る','短期売買を始める'] }
+    ]},
+    { cat: 'ポイ活', mids: [
+      { name: 'メイン', tasks: ['銀行ぐるぐる','支払い関係整理'] }
+    ]},
+    { cat: '仕事', mids: [
+      { name: 'メイン', tasks: ['後輩・部下との接し方改善','自分の検討事項を進める'] }
+    ]},
+    { cat: 'インプット', mids: [
+      { name: 'メイン', tasks: ['電車時間を読書に充てる','100の質問（5月で30まで）'] }
+    ]},
+    { cat: 'リフレッシュ', mids: [
+      { name: 'メイン', tasks: ['週一サウナを継続','旅行・温泉を計画する'] }
+    ]}
+  ];
+
+  for (let ci = 0; ci < initialData.length; ci++) {
+    const c = initialData[ci];
+    const catRef = await addDoc(collection(db, 'goals', uid, 'categories'), { name: c.cat, order: ci, open: true });
+    categories.push({ id: catRef.id, name: c.cat, order: ci, open: true });
+    for (let mi = 0; mi < c.mids.length; mi++) {
+      const m = c.mids[mi];
+      const midRef = await addDoc(collection(db, 'goals', uid, 'midItems'), { categoryId: catRef.id, name: m.name, order: mi });
+      midItems.push({ id: midRef.id, categoryId: catRef.id, name: m.name, order: mi });
+      for (let ti = 0; ti < m.tasks.length; ti++) {
+        const tRef = await addDoc(collection(db, 'goals', uid, 'tasks'), { midItemId: midRef.id, text: m.tasks[ti], done: false, doneAt: null, order: ti });
+        tasks.push({ id: tRef.id, midItemId: midRef.id, text: m.tasks[ti], done: false, doneAt: null, order: ti });
+      }
+    }
+  }
 }
 
 function renderGoals() {
-  const el = document.getElementById('goal-list');
-  el.innerHTML = goals.map(g => `
-    <div class="goal-item">
-      <div class="goal-header">
-        <div>
-          <div class="goal-title">${escHtml(g.title)}</div>
-          <div class="goal-cat">${g.category}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-          ${g.deadline ? `<div class="goal-deadline">📅 ${g.deadline}</div>` : ''}
-          <button style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.8rem" onclick="deleteGoal('${g.id}')">🗑</button>
+  const el = document.getElementById('goal-categories');
+  const activeTasks = tasks.filter(t => !t.done);
+
+  el.innerHTML = categories.map(cat => {
+    const catMids = midItems.filter(m => m.categoryId === cat.id).sort((a,b) => (a.order||0)-(b.order||0));
+    const bodyHTML = cat.open ? `<div class="cat-body">
+      ${catMids.map(mid => {
+        const midTasks = activeTasks.filter(t => t.midItemId === mid.id).sort((a,b) => (a.order||0)-(b.order||0));
+        return `<div>
+          <div class="mid-header">
+            <span class="mid-title">${escHtml(mid.name)}</span>
+            <button class="icon-btn" onclick="toggleAddTask('${mid.id}')">＋</button>
+          </div>
+          ${midTasks.map(t => `
+            <div class="task-row">
+              <button class="task-check" onclick="toggleTask('${t.id}')"></button>
+              <span class="task-text">${escHtml(t.text)}</span>
+              <button class="icon-btn" onclick="deleteTask('${t.id}')">🗑</button>
+            </div>`).join('')}
+          <div id="add-task-${mid.id}" class="inline-add" style="padding-left:16px">
+            <input id="ti-${mid.id}" type="text" placeholder="タスクを入力" onkeydown="if(event.key==='Enter')addTask('${mid.id}')">
+            <button onclick="addTask('${mid.id}')">追加</button>
+          </div>
+        </div>`;
+      }).join('')}
+      <div id="add-mid-${cat.id}" class="inline-add" style="margin-top:4px">
+        <input id="mi-${cat.id}" type="text" placeholder="中カテゴリ名" onkeydown="if(event.key==='Enter')addMidItem('${cat.id}')">
+        <button onclick="addMidItem('${cat.id}')">追加</button>
+      </div>
+    </div>` : '';
+
+    return `<div class="cat-block">
+      <div class="cat-header" onclick="toggleCategory('${cat.id}')">
+        <span>${escHtml(cat.name)}</span>
+        <div style="display:flex;gap:8px;align-items:center" onclick="event.stopPropagation()">
+          <button class="icon-btn" onclick="toggleAddMid('${cat.id}')" style="font-size:1rem">＋</button>
+          <span style="color:var(--text2);font-size:0.9rem">${cat.open ? '▲' : '▼'}</span>
         </div>
       </div>
-      <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${g.progress||0}%"></div></div>
-      <div class="progress-label">${g.progress||0}%</div>
-      <input type="range" min="0" max="100" value="${g.progress||0}"
-        style="width:100%;margin-top:8px;accent-color:var(--accent)"
-        oninput="updateGoalProgress('${g.id}', this.value)">
-    </div>
-  `).join('') || '<div style="color:var(--text2);font-size:0.9rem">目標なし</div>';
+      ${bodyHTML}
+    </div>`;
+  }).join('');
+
+  renderAchieved();
 }
 
-window.addGoal = async () => {
-  const title = document.getElementById('goal-title').value.trim();
-  if (!title) return;
-  const data = {
-    title,
-    category: document.getElementById('goal-cat').value,
-    deadline: document.getElementById('goal-deadline').value,
-    progress: Number(document.getElementById('goal-progress').value) || 0,
-    createdAt: Date.now()
-  };
-  const ref = await addDoc(collection(db, 'goals', uid, 'items'), data);
-  goals.push({ id: ref.id, ...data });
-  document.getElementById('goal-title').value = '';
-  document.getElementById('goal-deadline').value = '';
-  document.getElementById('goal-progress').value = '';
+function renderAchieved() {
+  const achieved = tasks.filter(t => t.done).sort((a,b) => (b.doneAt||0)-(a.doneAt||0));
+  const el = document.getElementById('achieved-list');
+  if (!el) return;
+  el.innerHTML = achieved.length
+    ? achieved.map(t => `
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:0.85rem;flex:1;text-decoration:line-through;color:var(--text2)">☑ ${escHtml(t.text)}</span>
+          <button onclick="restoreTask('${t.id}')" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text2);padding:4px 8px;font-size:0.75rem;cursor:pointer;font-family:inherit">元に戻す</button>
+        </div>`).join('')
+    : '<div style="color:var(--text2);font-size:0.9rem;padding:8px 0">なし</div>';
+}
+
+window.toggleCategory = async id => {
+  const cat = categories.find(c => c.id === id);
+  if (!cat) return;
+  cat.open = !cat.open;
+  renderGoals();
+  updateDoc(doc(db, 'goals', uid, 'categories', id), { open: cat.open }).catch(console.warn);
+};
+
+window.toggleAddMid = id => {
+  const row = document.getElementById('add-mid-' + id);
+  if (!row) return;
+  const isOpen = row.style.display === 'flex';
+  row.style.display = isOpen ? 'none' : 'flex';
+  if (!isOpen) setTimeout(() => document.getElementById('mi-' + id)?.focus(), 50);
+};
+
+window.addMidItem = async catId => {
+  const input = document.getElementById('mi-' + catId);
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) return;
+  const order = midItems.filter(m => m.categoryId === catId).length;
+  const ref = await addDoc(collection(db, 'goals', uid, 'midItems'), { categoryId: catId, name, order });
+  midItems.push({ id: ref.id, categoryId: catId, name, order });
   renderGoals();
 };
 
-window.updateGoalProgress = async (id, val) => {
-  const g = goals.find(x => x.id === id);
-  if (!g) return;
-  g.progress = Number(val);
-  await updateDoc(doc(db, 'goals', uid, 'items', id), { progress: g.progress });
+window.toggleAddTask = id => {
+  const row = document.getElementById('add-task-' + id);
+  if (!row) return;
+  const isOpen = row.style.display === 'flex';
+  row.style.display = isOpen ? 'none' : 'flex';
+  if (!isOpen) setTimeout(() => document.getElementById('ti-' + id)?.focus(), 50);
+};
+
+window.addTask = async midId => {
+  const input = document.getElementById('ti-' + midId);
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  const order = tasks.filter(t => t.midItemId === midId).length;
+  const ref = await addDoc(collection(db, 'goals', uid, 'tasks'), { midItemId: midId, text, done: false, doneAt: null, order });
+  tasks.push({ id: ref.id, midItemId: midId, text, done: false, doneAt: null, order });
+  input.value = '';
   renderGoals();
 };
 
-window.deleteGoal = async id => {
-  goals = goals.filter(x => x.id !== id);
-  await deleteDoc(doc(db, 'goals', uid, 'items', id));
+window.toggleTask = async id => {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  t.doneAt = t.done ? Date.now() : null;
+  await updateDoc(doc(db, 'goals', uid, 'tasks', id), { done: t.done, doneAt: t.doneAt });
   renderGoals();
+};
+
+window.deleteTask = async id => {
+  tasks = tasks.filter(x => x.id !== id);
+  await deleteDoc(doc(db, 'goals', uid, 'tasks', id));
+  renderGoals();
+};
+
+window.restoreTask = async id => {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.done = false; t.doneAt = null;
+  await updateDoc(doc(db, 'goals', uid, 'tasks', id), { done: false, doneAt: null });
+  renderGoals();
+};
+
+window.addCategory = async () => {
+  const input = document.getElementById('new-cat-input');
+  const name = input.value.trim();
+  if (!name) return;
+  const order = categories.length;
+  const ref = await addDoc(collection(db, 'goals', uid, 'categories'), { name, order, open: true });
+  categories.push({ id: ref.id, name, order, open: true });
+  input.value = '';
+  renderGoals();
+};
+
+window.toggleAchievedSection = () => {
+  showAchieved = !showAchieved;
+  document.getElementById('achieved-list').style.display = showAchieved ? 'block' : 'none';
+  document.getElementById('achieved-arrow').textContent = showAchieved ? '▲' : '▼';
 };
 
 // ── Wishlist ──────────────────────────────────
@@ -979,7 +1192,6 @@ function renderWishlist() {
       <button style="background:none;border:none;color:var(--text2);cursor:pointer" onclick="deleteWish('${w.id}')">🗑</button>
     </div>`;
   }).join('') || '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
-
   const total = wishes.filter(w => !w.bought && w.price).reduce((s, w) => s + Number(w.price), 0);
   document.getElementById('wish-total').textContent = total > 0 ? `未購入合計: ¥${total.toLocaleString()}` : '';
 }
@@ -988,12 +1200,10 @@ window.addWish = async () => {
   const name = document.getElementById('wish-name').value.trim();
   if (!name) return;
   const data = {
-    name,
-    price: document.getElementById('wish-price').value || '',
+    name, price: document.getElementById('wish-price').value || '',
     priority: document.getElementById('wish-prio').value,
     memo: document.getElementById('wish-memo').value.trim(),
-    bought: false,
-    createdAt: Date.now()
+    bought: false, createdAt: Date.now()
   };
   const ref = await addDoc(collection(db, 'wishlist', uid, 'items'), data);
   wishes.push({ id: ref.id, ...data });
@@ -1021,24 +1231,20 @@ window.deleteWish = async id => {
 async function renderHome() {
   const dayNames = ['日','月','火','水','木','金','土'];
   const now = new Date();
-
-  // 今日の日付
   document.getElementById('home-date').textContent =
     `${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日（${dayNames[now.getDay()]}）`;
 
-  // 今日のシフト
   const key = getMonthKey(now.getFullYear(), now.getMonth()+1);
   await fetchShiftMonth(now.getFullYear(), now.getMonth()+1);
   const todayShift = (shiftData[key] || {})[String(now.getDate())];
   const shiftEl = document.getElementById('home-shift');
   if (todayShift) {
-    const cls = SHIFTS[todayShift];
-    shiftEl.innerHTML = `<span class="shift-badge ${cls.replace('shift-','s').replace('shift-ake','sake').replace('shift-rest','rest')}">${todayShift}</span>`;
+    const cls = SHIFT_BADGE[todayShift] || 'rest';
+    shiftEl.innerHTML = `<span class="shift-badge ${cls}">${todayShift}</span>`;
   } else {
     shiftEl.innerHTML = `<span class="shift-badge rest">未入力</span>`;
   }
 
-  // 今週シフト
   const weekEl = document.getElementById('home-week');
   weekEl.innerHTML = '';
   for (let i = 0; i < 7; i++) {
@@ -1048,34 +1254,36 @@ async function renderHome() {
     await fetchShiftMonth(d.getFullYear(), d.getMonth()+1);
     const ws = (shiftData[wKey] || {})[String(d.getDate())];
     const isToday = d.toDateString() === now.toDateString();
-    const cls = ws ? SHIFTS[ws] : '';
     const card = document.createElement('div');
     card.className = 'week-day-card' + (isToday ? ' today' : '');
     card.innerHTML = `<div class="wd">${dayNames[i]}</div><div class="wdate">${d.getDate()}</div><div class="wshift" style="color:${ws?'':'var(--text2)'}">${ws||'―'}</div>`;
     weekEl.appendChild(card);
   }
 
-  // 未完了TODO上位3件
   const pending = todos.filter(t => !t.done).slice(0, 3);
-  const todoEl = document.getElementById('home-todos');
-  todoEl.innerHTML = pending.length
+  document.getElementById('home-todos').innerHTML = pending.length
     ? pending.map(t => {
         const prioClass = t.priority === 'high' ? 'prio-high' : t.priority === 'mid' ? 'prio-mid' : 'prio-low';
         return `<div class="todo-preview-item"><span class="prio-dot ${prioClass}"></span>${escHtml(t.text)}</div>`;
       }).join('')
     : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
 
-  // 目標達成度
   const goalEl = document.getElementById('home-goals');
-  goalEl.innerHTML = goals.length
-    ? goals.slice(0, 3).map(g => `
-        <div style="margin-bottom:10px">
+  goalEl.innerHTML = categories.length
+    ? categories.slice(0, 3).map(cat => {
+        const catMids = midItems.filter(m => m.categoryId === cat.id);
+        const catMidIds = new Set(catMids.map(m => m.id));
+        const catTasks = tasks.filter(t => catMidIds.has(t.midItemId));
+        const total = catTasks.length;
+        const done = catTasks.filter(t => t.done).length;
+        const pct = total > 0 ? Math.round(done / total * 100) : 0;
+        return `<div style="margin-bottom:10px">
           <div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px">
-            <span>${escHtml(g.title)}</span><span style="color:var(--text2)">${g.progress||0}%</span>
+            <span>${escHtml(cat.name)}</span><span style="color:var(--text2)">${done}/${total}</span>
           </div>
-          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${g.progress||0}%"></div></div>
-        </div>`
-    ).join('')
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join('')
     : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
 }
 
@@ -1083,7 +1291,6 @@ async function renderHome() {
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 </script>
 </body>
 </html>

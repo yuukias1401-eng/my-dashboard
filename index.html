@@ -1363,7 +1363,7 @@ async function renderHome() {
   const todayShift = (shiftData[getMonthKey(now.getFullYear(), now.getMonth()+1)]||{})[String(now.getDate())];
   const cls = todayShift ? (SHIFT_BADGE[todayShift]||'rest') : 'rest';
   const shiftTextColor = todayShift ? (SHIFT_COLORS[todayShift]||'') : '';
-  document.getElementById('home-shift').innerHTML = `<span class="shift-badge ${cls}"${shiftTextColor?` style="color:${shiftTextColor}"`:''}}>${todayShift||'未入力'}</span>`;
+  document.getElementById('home-shift').innerHTML = `<span class="shift-badge ${cls}"${shiftTextColor ? ` style="color:${shiftTextColor}"` : ''}>${todayShift||'未入力'}</span>`;
 
   const weekEl = document.getElementById('home-week'); weekEl.innerHTML = '';
   for (let i = 0; i < 7; i++) {
@@ -1372,7 +1372,7 @@ async function renderHome() {
     const ws = (shiftData[getMonthKey(d.getFullYear(), d.getMonth()+1)]||{})[String(d.getDate())];
     const card = document.createElement('div');
     card.className = 'week-day-card' + (d.toDateString()===now.toDateString()?' today':'');
-    card.innerHTML = `<div class="wd">${dayNames[i]}</div><div class="wdate">${d.getDate()}</div><div class="wshift" style="color:${ws?'':'var(--text2)'}">${ws||'―'}</div>`;
+    card.innerHTML = `<div class="wd">${dayNames[i]}</div><div class="wdate">${d.getDate()}</div><div class="wshift" style="color:${ws ? (SHIFT_COLORS[ws]||'var(--text)') : 'var(--text2)'}">${ws||'―'}</div>`;
     weekEl.appendChild(card);
   }
 

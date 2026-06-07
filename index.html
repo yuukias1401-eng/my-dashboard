@@ -248,6 +248,20 @@ body {
       <span id="completed-arrow">▶</span> 完了済み (<span id="completed-count">0</span>件)
     </button>
     <div id="completed-list" style="display:none"></div>
+
+    <hr style="border:none;border-top:2px solid var(--border);margin:20px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-weight:700;font-size:0.95rem">🔁 毎月ルーティン</span>
+      <button class="add-btn" onclick="toggleRoutineAddForm()">＋ 追加</button>
+    </div>
+    <div id="routine-add-form" style="display:none;gap:6px;margin-bottom:10px">
+      <input id="routine-text-input" type="text" class="form-input" placeholder="毎月やること..." onkeydown="if(event.key==='Enter')addRoutineTemplate()">
+      <button class="add-btn" onclick="addRoutineTemplate()">決定</button>
+    </div>
+    <div id="routine-list"></div>
+    <button onclick="togglePastMonths()" id="past-months-btn"
+      style="background:none;border:none;color:var(--text2);font-size:0.85rem;cursor:pointer;padding:8px 0">過去の月を見る ▼</button>
+    <div id="past-months-list" style="display:none"></div>
   </div>
 
   <div class="tab-content" id="content-goals">
@@ -346,12 +360,14 @@ onAuthStateChanged(auth, async user => {
     uid = user.uid;
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    await Promise.all([loadCalendar(), loadTodos(), loadGoals(), loadShop()]);
+    await Promise.all([loadCalendar(), loadTodos(), loadGoals(), loadShop(), loadRoutines()]);
     renderHome();
   } else {
     uid = null;
     editMode = false;
     editingShopItemId = null;
+    showPastMonths = false;
+    openRoutineMonths.clear();
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
   }
@@ -1036,6 +1052,142 @@ window.toggleAchievedSection = () => {
   showAchieved = !showAchieved;
   document.getElementById('achieved-list').style.display = showAchieved ? 'block' : 'none';
   document.getElementById('achieved-arrow').textContent = showAchieved ? '▲' : '▼';
+};
+
+// ── Routines ──────────────────────────────────
+let routineTemplates = [], routineMonthly = {}, showPastMonths = false;
+let routineLongTimer = null, routineLongBtn = null;
+const openRoutineMonths = new Set();
+
+async function loadRoutines() {
+  const tSnap = await getDocs(collection(db, 'routines', uid, 'templates'));
+  routineTemplates = tSnap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
+
+  const now = new Date();
+  const currentYM = getMonthKey(now.getFullYear(), now.getMonth() + 1);
+  if (!openRoutineMonths.has(currentYM)) openRoutineMonths.add(currentYM);
+
+  const months = [-1, 0, 1, 2].map(offset => {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    return getMonthKey(d.getFullYear(), d.getMonth() + 1);
+  });
+
+  const mSnaps = await Promise.all(months.map(m => getDoc(doc(db, 'routines', uid, 'monthly', m))));
+  mSnaps.forEach((snap, i) => { routineMonthly[months[i]] = snap.exists() ? snap.data() : {}; });
+
+  // 今月〜再来月の欠けているエントリを自動作成
+  await Promise.all(months.slice(1).map(async ym => {
+    const existing = routineMonthly[ym] || {};
+    const updates = {};
+    let hasNew = false;
+    for (const t of routineTemplates) {
+      if (!(t.id in existing)) { updates[t.id] = { done: false, doneAt: null }; hasNew = true; }
+    }
+    if (hasNew) {
+      await setDoc(doc(db, 'routines', uid, 'monthly', ym), updates, { merge: true });
+      routineMonthly[ym] = { ...existing, ...updates };
+    }
+  }));
+
+  renderRoutines();
+}
+
+function _renderRoutineMonth(ym, year, month) {
+  const monthData = routineMonthly[ym] || {};
+  const isOpen = openRoutineMonths.has(ym);
+  const doneCount = routineTemplates.filter(t => (monthData[t.id]||{}).done).length;
+  const itemsHTML = routineTemplates.map(t => {
+    const entry = monthData[t.id] || { done: false };
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border)">
+      <button class="todo-check ${entry.done?'done':''}" onclick="toggleRoutine('${ym}','${t.id}')" style="border-radius:4px;flex-shrink:0">${entry.done?'✓':''}</button>
+      <span style="flex:1;font-size:0.9rem;${entry.done?'text-decoration:line-through;opacity:0.5':''}">${escHtml(t.text)}</span>
+      <button style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:0.95rem;padding:2px 4px;flex-shrink:0"
+        onmousedown="startRoutineLongPress('${t.id}',this)" onmouseup="cancelRoutineLongPress()" onmouseleave="cancelRoutineLongPress()"
+        ontouchstart="startRoutineLongPress('${t.id}',this)" ontouchend="cancelRoutineLongPress()" ontouchcancel="cancelRoutineLongPress()">🗑</button>
+    </div>`;
+  }).join('');
+  return `<div class="cat-block" style="margin-bottom:8px">
+    <div class="cat-header" onclick="toggleRoutineMonth('${ym}')">
+      <span>📅 ${year}年${month}月 <span style="font-size:0.75rem;color:var(--text2);font-weight:400">${doneCount}/${routineTemplates.length}</span></span>
+      <span style="color:var(--text2);font-size:0.9rem">${isOpen?'▲':'▼'}</span>
+    </div>
+    ${isOpen ? `<div class="cat-body">${routineTemplates.length ? itemsHTML : '<div style="color:var(--text2);font-size:0.85rem;padding:4px 0">ルーティンを追加してください</div>'}</div>` : ''}
+  </div>`;
+}
+
+function renderRoutines() {
+  const now = new Date();
+  const el = document.getElementById('routine-list');
+  if (!el) return;
+  el.innerHTML = [0, 1, 2].map(offset => {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    return _renderRoutineMonth(getMonthKey(d.getFullYear(), d.getMonth() + 1), d.getFullYear(), d.getMonth() + 1);
+  }).join('');
+  const pastD = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const pastEl = document.getElementById('past-months-list');
+  if (pastEl) pastEl.innerHTML = _renderRoutineMonth(getMonthKey(pastD.getFullYear(), pastD.getMonth() + 1), pastD.getFullYear(), pastD.getMonth() + 1);
+  const btn = document.getElementById('past-months-btn');
+  if (btn) btn.textContent = showPastMonths ? '過去の月を閉じる ▲' : '過去の月を見る ▼';
+}
+
+window.toggleRoutineMonth = ym => {
+  if (openRoutineMonths.has(ym)) openRoutineMonths.delete(ym); else openRoutineMonths.add(ym);
+  renderRoutines();
+};
+window.togglePastMonths = () => {
+  showPastMonths = !showPastMonths;
+  const el = document.getElementById('past-months-list');
+  if (el) el.style.display = showPastMonths ? 'block' : 'none';
+  renderRoutines();
+};
+window.toggleRoutineAddForm = () => {
+  const form = document.getElementById('routine-add-form'); if (!form) return;
+  const open = form.style.display === 'flex';
+  form.style.display = open ? 'none' : 'flex';
+  if (!open) setTimeout(() => document.getElementById('routine-text-input')?.focus(), 50);
+};
+window.addRoutineTemplate = async () => {
+  const input = document.getElementById('routine-text-input');
+  const text = input?.value.trim(); if (!text) return;
+  const ref = await addDoc(collection(db, 'routines', uid, 'templates'), { text, order: routineTemplates.length, createdAt: Date.now() });
+  routineTemplates.push({ id: ref.id, text, order: routineTemplates.length });
+  input.value = '';
+  document.getElementById('routine-add-form').style.display = 'none';
+  const now = new Date();
+  await Promise.all([-1, 0, 1, 2].map(async offset => {
+    const d = new Date(now.getFullYear(), now.getMonth() + offset, 1);
+    const ym = getMonthKey(d.getFullYear(), d.getMonth() + 1);
+    if (!routineMonthly[ym]) routineMonthly[ym] = {};
+    if (!(ref.id in routineMonthly[ym])) {
+      routineMonthly[ym][ref.id] = { done: false, doneAt: null };
+      await setDoc(doc(db, 'routines', uid, 'monthly', ym), { [ref.id]: { done: false, doneAt: null } }, { merge: true });
+    }
+  }));
+  renderRoutines();
+};
+window.toggleRoutine = async (ym, templateId) => {
+  if (!routineMonthly[ym]) routineMonthly[ym] = {};
+  const entry = { ...(routineMonthly[ym][templateId] || { done: false, doneAt: null }) };
+  entry.done = !entry.done; entry.doneAt = entry.done ? Date.now() : null;
+  routineMonthly[ym][templateId] = entry;
+  await setDoc(doc(db, 'routines', uid, 'monthly', ym), { [templateId]: entry }, { merge: true });
+  renderRoutines();
+};
+window.startRoutineLongPress = (id, btn) => {
+  routineLongBtn = btn; btn.style.color = '#ef4444';
+  routineLongTimer = setTimeout(async () => {
+    routineLongTimer = null;
+    if (confirm('このルーティンをテンプレートから削除しますか？（過去の記録は残ります）')) {
+      routineTemplates = routineTemplates.filter(t => t.id !== id);
+      await deleteDoc(doc(db, 'routines', uid, 'templates', id));
+      renderRoutines();
+    }
+    if (btn) btn.style.color = ''; routineLongBtn = null;
+  }, 500);
+};
+window.cancelRoutineLongPress = () => {
+  if (routineLongTimer) { clearTimeout(routineLongTimer); routineLongTimer = null; }
+  if (routineLongBtn) { routineLongBtn.style.color = ''; routineLongBtn = null; }
 };
 
 // ── Shop ──────────────────────────────────────

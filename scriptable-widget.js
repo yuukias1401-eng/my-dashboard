@@ -103,31 +103,24 @@ function makeSmallWidget(monthData, today) {
   const w = new ListWidget()
   w.backgroundColor = new Color('#1e293b')
   w.url = DASHBOARD_URL
-  w.setPadding(12, 12, 12, 12)
+  w.setPadding(14, 14, 14, 14)
 
-  // 日付行: 6/7  日曜日
-  const dateRow = w.addStack()
-  dateRow.layoutHorizontally()
-  dateRow.centerAlignContent()
-  dateRow.spacing = 6
-
-  // 左：6/7（大）
-  const dateText = dateRow.addText(`${today.getMonth()+1}/${today.getDate()}`)
-  dateText.font = Font.boldSystemFont(22)
+  // 6/7（大）と曜日（小）を縦並び
+  const dateText = w.addText(`${today.getMonth()+1}/${today.getDate()}`)
+  dateText.font = Font.boldSystemFont(32)
   dateText.textColor = Color.white()
-  dateText.minimumScaleFactor = 0.7
+  dateText.minimumScaleFactor = 0.8
 
-  // 右：曜日（小）
-  const dowText = dateRow.addText(DAY_NAMES[today.getDay()] + '曜日')
-  dowText.font = Font.systemFont(10)
+  const dowText = w.addText(DAY_NAMES[today.getDay()] + '曜日')
+  dowText.font = Font.systemFont(11)
   dowText.textColor = new Color('#94a3b8')
 
-  w.addSpacer(5)
+  w.addSpacer(4)
 
   // シフト
   if (shift) {
     const shiftT = w.addText(shift)
-    shiftT.font = Font.boldSystemFont(14)
+    shiftT.font = Font.boldSystemFont(16)
     shiftT.textColor = shiftColor
   }
 
@@ -136,7 +129,7 @@ function makeSmallWidget(monthData, today) {
   // 区切り線
   const line = w.addStack()
   line.backgroundColor = new Color('#334155')
-  line.size = new Size(200, 1)
+  line.size = new Size(130, 1)
 
   w.addSpacer(6)
 
@@ -145,7 +138,7 @@ function makeSmallWidget(monthData, today) {
     for (const ev of todayEvents.slice(0, 2)) {
       const row = w.addStack()
       row.layoutHorizontally()
-      row.spacing = 6
+      row.spacing = 5
       const t = row.addText(ev.time || '--:--')
       t.font = Font.boldSystemFont(10)
       t.textColor = new Color('#60a5fa')

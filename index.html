@@ -307,7 +307,9 @@ body {
     <div class="modal-title" id="shift-modal-title" style="margin-bottom:14px"></div>
     <div style="margin-bottom:14px">
       <div style="font-size:0.82rem;color:var(--text2);font-weight:600;margin-bottom:8px">予定</div>
-      <div id="event-list" style="margin-bottom:8px"></div>
+      <div id="event-list" style="margin-bottom:4px"></div>
+      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
+      <div style="font-size:0.8rem;color:var(--text2);margin-bottom:6px">予定を追加</div>
       <div style="display:flex;gap:6px">
         <input id="event-time" type="time" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 8px;font-size:0.85rem;font-family:inherit;width:96px">
         <input id="event-title-input" type="text" placeholder="件名" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:0.85rem;font-family:inherit" onkeydown="if(event.key==='Enter')addEvent()">
@@ -543,10 +545,10 @@ function renderEventList() {
   const evs = ((eventData[getMonthKey(calYear, calMonth)] || {})[String(selectedDay)] || []);
   document.getElementById('event-list').innerHTML = evs.length
     ? evs.map((ev, i) => `
-        <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)">
-          <span style="font-size:0.8rem;color:var(--text2);flex-shrink:0;min-width:40px">${ev.time||''}</span>
-          <span style="font-size:0.9rem;flex:1">${escHtml(ev.title||'')}</span>
-          <button onclick="deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer">🗑</button>
+        <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:8px;padding:10px 12px;margin-bottom:6px">
+          <span style="font-size:0.9rem;font-weight:700;color:var(--accent);flex-shrink:0;min-width:48px">${ev.time||''}</span>
+          <span style="font-size:1rem;color:var(--text);flex:1">${escHtml(ev.title||'')}</span>
+          <button onclick="deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1rem">🗑</button>
         </div>`).join('')
     : '<div style="color:var(--text2);font-size:0.85rem;padding:4px 0">予定なし</div>';
 }
@@ -576,7 +578,7 @@ window.deleteEvent = async idx => {
 let todos = [], showCompleted = false;
 let dragSrcId = null, touchDragId = null, touchDragEl = null;
 let longPressTimer = null, longPressBtn = null;
-let touchLongPressTimer = null, isDragging = false;
+let touchLongTimer = null, touchDragActive = false, touchStartY = 0;
 
 async function loadTodos() {
   const snap = await getDocs(collection(db, 'todos', uid, 'items'));
@@ -671,28 +673,22 @@ window.onDragEnd = () => {
 
 // ── Drag & drop (touch / long-press) ─────────
 window.onTouchStart = (e, id) => {
-  if (touchLongPressTimer) clearTimeout(touchLongPressTimer);
-  const itemEl = e.currentTarget.closest('.todo-item');
-  touchLongPressTimer = setTimeout(() => {
-    touchLongPressTimer = null;
-    isDragging = true;
+  e.preventDefault();
+  touchStartY = e.touches[0].clientY;
+  touchDragEl = e.currentTarget.closest('.todo-item');
+  if (touchLongTimer) clearTimeout(touchLongTimer);
+  touchLongTimer = setTimeout(() => {
+    touchDragActive = true;
     touchDragId = id;
-    touchDragEl = itemEl;
-    if (itemEl) {
-      itemEl.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
-      itemEl.style.transform = 'scale(1.02)';
-      itemEl.style.opacity = '0.85';
-      itemEl.style.position = 'relative';
-      itemEl.style.zIndex = '10';
-    }
     if (navigator.vibrate) navigator.vibrate(50);
+    if (touchDragEl) {
+      touchDragEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+      touchDragEl.style.opacity = '0.8';
+    }
   }, 500);
 };
 document.addEventListener('touchmove', e => {
-  if (!isDragging) {
-    if (touchLongPressTimer) { clearTimeout(touchLongPressTimer); touchLongPressTimer = null; }
-    return;
-  }
+  if (!touchDragActive) return;
   e.preventDefault();
   const t = e.touches[0];
   const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -701,37 +697,27 @@ document.addEventListener('touchmove', e => {
   if (item && item.dataset.id !== touchDragId) item.classList.add('drag-over');
 }, { passive: false });
 document.addEventListener('touchend', async e => {
-  if (touchLongPressTimer) { clearTimeout(touchLongPressTimer); touchLongPressTimer = null; }
-  if (!isDragging) return;
+  clearTimeout(touchLongTimer);
+  if (!touchDragActive) { touchDragEl = null; return; }
   const t = e.changedTouches[0];
   const el = document.elementFromPoint(t.clientX, t.clientY);
   const targetItem = el?.closest('.todo-item');
   const targetId = targetItem?.dataset?.id;
-  document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
-  if (touchDragEl) {
-    touchDragEl.style.boxShadow = '';
-    touchDragEl.style.transform = '';
-    touchDragEl.style.opacity = '';
-    touchDragEl.style.position = '';
-    touchDragEl.style.zIndex = '';
-  }
-  isDragging = false;
+  document.querySelectorAll('.todo-item').forEach(x => {
+    x.classList.remove('drag-over');
+    x.style.opacity = '';
+    x.style.boxShadow = '';
+  });
+  if (touchDragEl) { touchDragEl.style.opacity = ''; touchDragEl.style.boxShadow = ''; }
   const fromId = touchDragId;
-  touchDragId = null; touchDragEl = null;
+  touchDragActive = false; touchDragId = null; touchDragEl = null;
   if (targetId && targetId !== fromId) await reorderTodos(fromId, targetId);
 });
 document.addEventListener('touchcancel', () => {
-  if (touchLongPressTimer) { clearTimeout(touchLongPressTimer); touchLongPressTimer = null; }
-  if (!isDragging) return;
+  clearTimeout(touchLongTimer);
+  touchDragActive = false; touchDragId = null;
+  if (touchDragEl) { touchDragEl.style.opacity = ''; touchDragEl.style.boxShadow = ''; touchDragEl = null; }
   document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
-  if (touchDragEl) {
-    touchDragEl.style.boxShadow = '';
-    touchDragEl.style.transform = '';
-    touchDragEl.style.opacity = '';
-    touchDragEl.style.position = '';
-    touchDragEl.style.zIndex = '';
-  }
-  isDragging = false; touchDragId = null; touchDragEl = null;
 });
 
 async function reorderTodos(fromId, toId) {

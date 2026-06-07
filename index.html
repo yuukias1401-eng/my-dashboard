@@ -372,6 +372,7 @@ onAuthStateChanged(auth, async user => {
     document.getElementById('app').style.display = 'flex';
     await Promise.all([loadCalendar(), loadTodos(), loadGoals(), loadShop(), loadRoutines()]);
     renderHome();
+    applyHashTab();
   } else {
     uid = null;
     editMode = false;
@@ -389,7 +390,15 @@ window.switchTab = tab => {
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('content-' + tab).classList.add('active');
   if (tab === 'home') renderHome();
+  window.location.hash = tab;
 };
+
+// URLハッシュでタブ初期表示
+function applyHashTab() {
+  const hash = window.location.hash.replace('#','');
+  const valid = ['home','calendar','todo','goals','shop','routine'];
+  if (valid.includes(hash)) switchTab(hash);
+}
 
 // ── Calendar ──────────────────────────────────
 const SHIFTS = {

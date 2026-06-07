@@ -4,6 +4,7 @@
 // ============================================
 
 const DASHBOARD_URL = "https://yuukias1401-eng.github.io/my-dashboard/"
+const CALENDAR_URL  = "https://yuukias1401-eng.github.io/my-dashboard/#calendar"
 const API_KEY = "AIzaSyA1DGiJ6TShj6ZI5_j-vkR5gSKsxEfUwqA"
 const PROJECT_ID = "trade-log-c20dd"
 const KEYCHAIN_KEY = "mydashboard_token"
@@ -254,6 +255,123 @@ function makeMediumWidget(monthData, today) {
 }
 
 // ── エラーウィジェット ────────────────────
+// ── カレンダーウィジェット（Large: 2週間グリッド）──
+function makeCalendarWidget(monthData, today) {
+  const days   = monthData.days   || {}
+  const events = monthData.events || {}
+
+  const SHIFT_TEXT_COLORS = {
+    '1勤':'#d97706','2勤':'#1d4ed8','明け':'#7c3aed','休み':'#e11d48',
+    '有給':'#059669','1勤補充':'#ea580c','2勤補充':'#2563eb','日専':'#0d9488'
+  }
+  const DAY_SHORT = ['日','月','火','水','木','金','土']
+
+  const w = new ListWidget()
+  w.backgroundColor = new Color('#1e293b')
+  w.url = CALENDAR_URL
+  w.setPadding(10, 10, 10, 10)
+
+  // ヘッダー: 年月
+  const titleRow = w.addStack()
+  titleRow.layoutHorizontally()
+  const titleT = titleRow.addText(`${today.getFullYear()}年 ${today.getMonth()+1}月`)
+  titleT.font = Font.boldSystemFont(13)
+  titleT.textColor = Color.white()
+  titleRow.addSpacer()
+
+  w.addSpacer(6)
+
+  // 曜日ヘッダー
+  const dowRow = w.addStack()
+  dowRow.layoutHorizontally()
+  for (let i = 0; i < 7; i++) {
+    const cell = dowRow.addStack()
+    cell.size = new Size(0, 14)
+    cell.layoutHorizontally()
+    cell.addSpacer()
+    const t = cell.addText(DAY_SHORT[i])
+    t.font = Font.systemFont(9)
+    t.textColor = i===0 ? new Color('#ef4444') : i===6 ? new Color('#3b82f6') : new Color('#64748b')
+    cell.addSpacer()
+    if (i < 6) dowRow.addSpacer(2)
+  }
+
+  w.addSpacer(3)
+
+  // カレンダーグリッド（2週分 = 14日 + 月初のオフセット）
+  const firstDow = new Date(today.getFullYear(), today.getMonth(), 1).getDay()
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate()
+
+  // 今日が含まれる週の開始日を計算（日曜始まり）
+  const todayDow = today.getDay()
+  const weekStart = today.getDate() - todayDow  // 今週日曜の日付（1以下もあり）
+
+  // 表示する日付範囲: 今週日曜 〜 再来週土曜（14日間）
+  const cellDates = []
+  for (let i = 0; i < 14; i++) {
+    cellDates.push(weekStart + i)
+  }
+
+  // 2行 × 7列
+  for (let row = 0; row < 2; row++) {
+    const rowStack = w.addStack()
+    rowStack.layoutHorizontally()
+    for (let col = 0; col < 7; col++) {
+      const d = cellDates[row * 7 + col]
+      const cell = rowStack.addStack()
+      cell.layoutVertically()
+      cell.centerAlignContent()
+      cell.size = new Size(0, 36)
+      cell.cornerRadius = 4
+
+      const isToday = d === today.getDate()
+      if (isToday) cell.backgroundColor = new Color('#fbbf24', 0.25)
+
+      const shift = (d >= 1 && d <= daysInMonth) ? (days[String(d)] || '') : ''
+      const hasEvent = (d >= 1 && d <= daysInMonth) && ((events[String(d)] || []).length > 0)
+
+      cell.addSpacer(2)
+
+      // 日付
+      const dateStack = cell.addStack()
+      dateStack.layoutHorizontally()
+      dateStack.addSpacer()
+      const dateLabel = dateStack.addText(d >= 1 && d <= daysInMonth ? String(d) : '')
+      dateLabel.font = isToday ? Font.boldSystemFont(11) : Font.systemFont(11)
+      dateLabel.textColor = d < 1 || d > daysInMonth ? new Color('#334155') :
+        isToday ? new Color('#fbbf24') :
+        col===0 ? new Color('#ef4444') : col===6 ? new Color('#3b82f6') : Color.white()
+      if (hasEvent) {
+        const dot = dateStack.addText('●')
+        dot.font = Font.systemFont(5)
+        dot.textColor = new Color('#f97316')
+      }
+      dateStack.addSpacer()
+
+      // シフト
+      const shiftStack = cell.addStack()
+      shiftStack.layoutHorizontally()
+      shiftStack.addSpacer()
+      if (shift) {
+        // 長い名前は短縮
+        const shortName = shift.replace('補充','補').replace('勤','勤')
+        const shiftLabel = shiftStack.addText(shortName)
+        shiftLabel.font = Font.boldSystemFont(8)
+        shiftLabel.textColor = new Color(SHIFT_TEXT_COLORS[shift] || '#94a3b8')
+      }
+      shiftStack.addSpacer()
+
+      cell.addSpacer(2)
+
+      if (col < 6) rowStack.addSpacer(2)
+    }
+    if (row < 1) w.addSpacer(3)
+  }
+
+  w.addSpacer()
+  return w
+}
+
 function makeErrorWidget(msg) {
   const w = new ListWidget()
   w.backgroundColor = new Color('#1e293b')
@@ -277,15 +395,19 @@ async function main() {
 
   const today = new Date()
   const yearMonth = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}`
-  const isSmall = config.widgetFamily === 'small'
+  const family = config.widgetFamily  // 'small' | 'medium' | 'large'
 
   let widget
   try {
     const { idToken, uid } = await getIdToken()
     const monthData = await fetchMonth(idToken, uid, yearMonth)
-    widget = isSmall
-      ? makeSmallWidget(monthData, today)
-      : makeMediumWidget(monthData, today)
+    if (family === 'small') {
+      widget = makeSmallWidget(monthData, today)
+    } else if (family === 'large') {
+      widget = makeCalendarWidget(monthData, today)
+    } else {
+      widget = makeMediumWidget(monthData, today)
+    }
   } catch(e) {
     widget = makeErrorWidget(e.message || '接続エラー')
   }

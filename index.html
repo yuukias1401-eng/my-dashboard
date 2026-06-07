@@ -100,36 +100,29 @@ body {
 .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .cal-nav-btn { background: var(--surface2); border: none; color: var(--text); width: 36px; height: 36px; border-radius: 8px; font-size: 1.1rem; cursor: pointer; }
 .cal-title { font-size: 1.1rem; font-weight: 700; }
-.cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; color: var(--text2); margin-bottom: 4px; }
-.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+.cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.75rem; color: var(--text2); border-left: 1px solid #e2e8f0; border-top: 1px solid #e2e8f0; }
+.cal-weekdays > div { padding: 6px 0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid #e2e8f0; }
 
 .cal-cell {
-  aspect-ratio: 1; border-radius: 6px; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; cursor: pointer; font-size: 0.8rem;
-  position: relative; background: var(--surface2); border: 1px solid transparent;
-  transition: border-color 0.1s; min-height: 44px;
+  min-height: 64px; display: flex; flex-direction: column;
+  align-items: center; justify-content: flex-start; padding-top: 6px; cursor: pointer; font-size: 0.8rem;
+  position: relative; background: var(--surface);
+  border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
+  transition: background 0.1s;
 }
-.cal-cell:hover { border-color: var(--border); }
-.cal-cell.empty { background: transparent; cursor: default; }
-.cal-cell.today-cell { border-color: var(--accent) !important; }
-.cal-cell .cell-date { font-size: 0.8rem; color: inherit; }
-.cal-cell .cell-shift { font-size: 0.6rem; font-weight: 700; margin-top: 2px; color: inherit; }
+.cal-cell:hover { background: #f8fafc; }
+.cal-cell.empty { background: #f8fafc; cursor: default; }
+.cal-cell.today-cell { background: #fef9c3 !important; outline: 2px solid #fbbf24; outline-offset: -2px; }
+.cal-cell .cell-date { font-size: 1rem; font-weight: 700; line-height: 1; }
+.cal-cell .cell-shift { font-size: 0.65rem; font-weight: 700; margin-top: 3px; }
 .cal-cell .cell-event-dot {
   position: absolute; top: 3px; right: 3px;
   width: 8px; height: 8px; border-radius: 50%; background: #f97316;
 }
 
-.cal-cell.shift-1      { background: #fef3c7; color: #92400e; }
-.cal-cell.shift-2      { background: #dbeafe; color: #1e40af; }
-.cal-cell.shift-ake    { background: #ede9fe; color: #5b21b6; }
-.cal-cell.shift-rest   { background: #f1f5f9; color: #475569; }
-.cal-cell.shift-yukyu  { background: #d1fae5; color: #065f46; }
-.cal-cell.shift-1sup   { background: #ffedd5; color: #9a3412; }
-.cal-cell.shift-2sup   { background: #dbeafe; color: #1e3a8a; }
-.cal-cell.shift-nisspe { background: #ccfbf1; color: #134e4a; }
-
-.cal-summary { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.cal-sum-item { background: var(--surface2); border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; display: flex; gap: 6px; }
+.cal-summary { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.cal-sum-item { background: var(--surface2); border-radius: 6px; padding: 4px 8px; font-size: 0.7rem; display: flex; gap: 4px; }
 .cal-sum-item span { color: var(--text2); }
 
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 200; align-items: flex-end; justify-content: center; }
@@ -398,6 +391,10 @@ const SHIFT_BADGE = {
   '1勤':'s1','2勤':'s2','明け':'sake','休み':'rest',
   '有給':'s-yukyu','1勤補充':'s-1sup','2勤補充':'s-2sup','日専':'s-nisspe'
 };
+const SHIFT_COLORS = {
+  '1勤':'#d97706','2勤':'#1d4ed8','明け':'#7c3aed','休み':'#e11d48',
+  '有給':'#059669','1勤補充':'#ea580c','2勤補充':'#2563eb','日専':'#0d9488'
+};
 const SHIFT_CYCLE = ['1勤','2勤','明け','1勤','2勤','明け','休み','休み'];
 const AUTOFILL_VERSION = 3;
 
@@ -477,11 +474,14 @@ function renderCalendar() {
   for (let d = 1; d <= daysInMonth; d++) {
     const el = document.createElement('div');
     const shift = days[String(d)];
-    el.className = 'cal-cell' + (shift ? ' ' + SHIFTS[shift] : '');
+    const dow = (firstDay + d - 1) % 7;
+    el.className = 'cal-cell';
     const isToday = calYear === today.getFullYear() && calMonth === today.getMonth()+1 && d === today.getDate();
     if (isToday) el.classList.add('today-cell');
-    el.innerHTML = `<span class="cell-date">${d}</span>`;
-    if (shift) el.innerHTML += `<span class="cell-shift">${shift}</span>`;
+    const dateColor = dow === 0 ? '#ef4444' : dow === 6 ? '#3b82f6' : '';
+    const shiftColor = shift ? (SHIFT_COLORS[shift] || '') : '';
+    el.innerHTML = `<span class="cell-date"${dateColor ? ` style="color:${dateColor}"` : ''}>${d}</span>`;
+    if (shift) el.innerHTML += `<span class="cell-shift" style="color:${shiftColor}">${shift}</span>`;
     if ((evs[String(d)] || []).length > 0) el.innerHTML += `<span class="cell-event-dot"></span>`;
     el.onclick = () => openShiftModal(d);
     grid.appendChild(el);
@@ -576,6 +576,7 @@ window.deleteEvent = async idx => {
 let todos = [], showCompleted = false;
 let dragSrcId = null, touchDragId = null, touchDragEl = null;
 let longPressTimer = null, longPressBtn = null;
+let touchLongPressTimer = null, isDragging = false;
 
 async function loadTodos() {
   const snap = await getDocs(collection(db, 'todos', uid, 'items'));
@@ -668,14 +669,30 @@ window.onDragEnd = () => {
   document.querySelectorAll('.todo-item').forEach(x => { x.style.opacity = ''; x.classList.remove('drag-over'); });
 };
 
-// ── Drag & drop (touch) ───────────────────────
+// ── Drag & drop (touch / long-press) ─────────
 window.onTouchStart = (e, id) => {
-  touchDragId = id;
-  touchDragEl = e.currentTarget.closest('.todo-item');
-  if (touchDragEl) touchDragEl.style.opacity = '0.4';
+  if (touchLongPressTimer) clearTimeout(touchLongPressTimer);
+  const itemEl = e.currentTarget.closest('.todo-item');
+  touchLongPressTimer = setTimeout(() => {
+    touchLongPressTimer = null;
+    isDragging = true;
+    touchDragId = id;
+    touchDragEl = itemEl;
+    if (itemEl) {
+      itemEl.style.boxShadow = '0 8px 24px rgba(0,0,0,0.2)';
+      itemEl.style.transform = 'scale(1.02)';
+      itemEl.style.opacity = '0.85';
+      itemEl.style.position = 'relative';
+      itemEl.style.zIndex = '10';
+    }
+    if (navigator.vibrate) navigator.vibrate(50);
+  }, 500);
 };
 document.addEventListener('touchmove', e => {
-  if (!touchDragId) return;
+  if (!isDragging) {
+    if (touchLongPressTimer) { clearTimeout(touchLongPressTimer); touchLongPressTimer = null; }
+    return;
+  }
   e.preventDefault();
   const t = e.touches[0];
   const el = document.elementFromPoint(t.clientX, t.clientY);
@@ -684,15 +701,37 @@ document.addEventListener('touchmove', e => {
   if (item && item.dataset.id !== touchDragId) item.classList.add('drag-over');
 }, { passive: false });
 document.addEventListener('touchend', async e => {
-  if (!touchDragId) return;
+  if (touchLongPressTimer) { clearTimeout(touchLongPressTimer); touchLongPressTimer = null; }
+  if (!isDragging) return;
   const t = e.changedTouches[0];
   const el = document.elementFromPoint(t.clientX, t.clientY);
   const targetItem = el?.closest('.todo-item');
   const targetId = targetItem?.dataset?.id;
-  document.querySelectorAll('.todo-item').forEach(x => { x.classList.remove('drag-over'); x.style.opacity = ''; });
-  if (touchDragEl) touchDragEl.style.opacity = '';
-  if (targetId && targetId !== touchDragId) await reorderTodos(touchDragId, targetId);
+  document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
+  if (touchDragEl) {
+    touchDragEl.style.boxShadow = '';
+    touchDragEl.style.transform = '';
+    touchDragEl.style.opacity = '';
+    touchDragEl.style.position = '';
+    touchDragEl.style.zIndex = '';
+  }
+  isDragging = false;
+  const fromId = touchDragId;
   touchDragId = null; touchDragEl = null;
+  if (targetId && targetId !== fromId) await reorderTodos(fromId, targetId);
+});
+document.addEventListener('touchcancel', () => {
+  if (touchLongPressTimer) { clearTimeout(touchLongPressTimer); touchLongPressTimer = null; }
+  if (!isDragging) return;
+  document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
+  if (touchDragEl) {
+    touchDragEl.style.boxShadow = '';
+    touchDragEl.style.transform = '';
+    touchDragEl.style.opacity = '';
+    touchDragEl.style.position = '';
+    touchDragEl.style.zIndex = '';
+  }
+  isDragging = false; touchDragId = null; touchDragEl = null;
 });
 
 async function reorderTodos(fromId, toId) {
@@ -779,6 +818,9 @@ function renderGoals() {
         return `<div>
           <div class="mid-header">
             <span class="mid-title">${escHtml(mid.name)}</span>
+            <button class="icon-btn"
+              onmousedown="startMidLongPress('${mid.id}',this)" onmouseup="cancelMidLongPress()" onmouseleave="cancelMidLongPress()"
+              ontouchstart="startMidLongPress('${mid.id}',this)" ontouchend="cancelMidLongPress()" ontouchcancel="cancelMidLongPress()">🗑</button>
           </div>
           ${midTasks.map(t => `
             <div class="task-row">
@@ -789,13 +831,13 @@ function renderGoals() {
                 ontouchstart="startTaskLongPress('${t.id}',this)" ontouchend="cancelTaskLongPress()" ontouchcancel="cancelTaskLongPress()">🗑</button>
             </div>`).join('')}
           <button class="add-task-link" onclick="toggleAddTask('${mid.id}')">＋ タスクを追加</button>
-          <div id="add-task-${mid.id}" class="inline-add" style="padding-left:16px">
+          <div id="add-task-${mid.id}" class="inline-add" style="display:none;padding-left:16px">
             <input id="ti-${mid.id}" type="text" placeholder="タスクを入力" onkeydown="if(event.key==='Enter')addTask('${mid.id}')">
             <button onclick="addTask('${mid.id}')">追加</button>
           </div>
         </div>`;
       }).join('')}
-      <div id="add-mid-${cat.id}" class="inline-add" style="margin-top:4px">
+      <div id="add-mid-${cat.id}" class="inline-add" style="display:none;margin-top:4px">
         <input id="mi-${cat.id}" type="text" placeholder="中カテゴリ名" onkeydown="if(event.key==='Enter')addMidItem('${cat.id}')">
         <button onclick="addMidItem('${cat.id}')">追加</button>
       </div>
@@ -854,6 +896,33 @@ window.cancelTaskLongPress = () => {
     if (taskLongPressBtn) { taskLongPressBtn.style.color = ''; taskLongPressBtn = null; }
   }
 };
+
+// ── Mid-item long-press delete ─────────────────
+let midLongPressTimer = null, midLongPressBtn = null;
+window.startMidLongPress = (id, btn) => {
+  midLongPressBtn = btn;
+  btn.style.color = '#ef4444';
+  midLongPressTimer = setTimeout(async () => {
+    midLongPressTimer = null;
+    if (confirm('この中カテゴリと配下のタスクをすべて削除しますか？')) await deleteMidItem(id);
+    if (btn) btn.style.color = '';
+    midLongPressBtn = null;
+  }, 500);
+};
+window.cancelMidLongPress = () => {
+  if (midLongPressTimer) {
+    clearTimeout(midLongPressTimer); midLongPressTimer = null;
+    if (midLongPressBtn) { midLongPressBtn.style.color = ''; midLongPressBtn = null; }
+  }
+};
+async function deleteMidItem(id) {
+  const toDelete = tasks.filter(t => t.midItemId === id);
+  await Promise.all(toDelete.map(t => deleteDoc(doc(db, 'goals', uid, 'tasks', t.id))));
+  tasks = tasks.filter(t => t.midItemId !== id);
+  await deleteDoc(doc(db, 'goals', uid, 'midItems', id));
+  midItems = midItems.filter(m => m.id !== id);
+  renderGoals();
+}
 
 window.toggleCategory = async id => {
   const cat = categories.find(c => c.id === id); if (!cat) return;

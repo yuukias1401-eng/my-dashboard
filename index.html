@@ -176,28 +176,8 @@ body {
 .inline-add input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 8px; font-size: 0.85rem; font-family: inherit; }
 .inline-add button { background: var(--accent); border: none; border-radius: 6px; color: #fff; padding: 6px 10px; cursor: pointer; font-size: 0.8rem; white-space: nowrap; }
 
-/* Wishlist */
-.wish-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
-.wish-item:last-child { border-bottom: none; }
-.wish-check { width: 20px; height: 20px; border-radius: 4px; border: 2px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; }
-.wish-check.bought { background: var(--success); border-color: var(--success); }
-.wish-info { flex: 1; }
-.wish-name { font-size: 0.9rem; }
-.wish-name.bought { text-decoration: line-through; color: var(--text2); }
-.wish-price { font-size: 0.8rem; color: var(--text2); }
-.wish-prio { font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; }
-.wish-prio.high { background: #fee2e2; color: #991b1b; }
-.wish-prio.mid  { background: #fef3c7; color: #92400e; }
-.wish-prio.low  { background: var(--surface2); color: var(--text2); }
-
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
 .form-input { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 12px; font-size: 0.9rem; width: 100%; font-family: inherit; }
 .form-input::placeholder { color: var(--text2); }
-.form-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 8px; font-size: 0.9rem; width: 100%; }
-.sub-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
-.sub-tab { background: var(--surface2); border: none; border-radius: 8px; color: var(--text2); padding: 8px 16px; font-size: 0.85rem; cursor: pointer; }
-.sub-tab.active { background: var(--accent); color: #fff; }
-.summary-total { display: flex; justify-content: flex-end; font-size: 0.85rem; color: var(--text2); padding: 8px 0; }
 .progress-bar-wrap { background: var(--border); border-radius: 4px; height: 8px; margin: 6px 0; }
 .progress-bar-fill { height: 8px; border-radius: 4px; background: var(--accent); transition: width 0.3s; }
 </style>
@@ -219,7 +199,8 @@ body {
     <button class="tab-btn active" onclick="switchTab('home')" id="tab-home"><span class="tab-icon">🏠</span>ホーム</button>
     <button class="tab-btn" onclick="switchTab('calendar')" id="tab-calendar"><span class="tab-icon">📅</span>カレンダー</button>
     <button class="tab-btn" onclick="switchTab('todo')" id="tab-todo"><span class="tab-icon">✅</span>TODO</button>
-    <button class="tab-btn" onclick="switchTab('goals')" id="tab-goals"><span class="tab-icon">🎯</span>目標/リスト</button>
+    <button class="tab-btn" onclick="switchTab('goals')" id="tab-goals"><span class="tab-icon">🎯</span>目標</button>
+    <button class="tab-btn" onclick="switchTab('shop')" id="tab-shop"><span class="tab-icon">🛒</span>買い物</button>
   </nav>
   <div id="edit-mode-btn" onclick="toggleEditMode()"
     style="position:fixed;top:8px;right:12px;z-index:150;background:var(--surface2);border:none;border-radius:20px;padding:6px 12px;font-size:0.8rem;cursor:pointer;color:var(--text2);box-shadow:0 1px 4px rgba(0,0,0,0.1)">
@@ -270,39 +251,24 @@ body {
   </div>
 
   <div class="tab-content" id="content-goals">
-    <div class="sub-tabs">
-      <button class="sub-tab active" onclick="switchSubTab('goals-pane')" id="subtab-goals-pane">🎯 目標</button>
-      <button class="sub-tab" onclick="switchSubTab('wish-pane')" id="subtab-wish-pane">🛍 ほしいもの</button>
+    <div id="goal-categories"></div>
+    <div style="display:flex;gap:6px;margin-top:12px">
+      <input id="new-cat-input" type="text" placeholder="カテゴリを追加..." class="form-input" onkeydown="if(event.key==='Enter')addCategory()">
+      <button class="add-btn" onclick="addCategory()">追加</button>
     </div>
-    <div id="goals-pane">
-      <div id="goal-categories"></div>
-      <div style="display:flex;gap:6px;margin-top:12px">
-        <input id="new-cat-input" type="text" placeholder="カテゴリを追加..." class="form-input" onkeydown="if(event.key==='Enter')addCategory()">
-        <button class="add-btn" onclick="addCategory()">追加</button>
-      </div>
-      <div style="margin-top:16px">
-        <button onclick="toggleAchievedSection()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text2);font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:inherit">
-          <span>🏆 達成済み</span><span id="achieved-arrow">▼</span>
-        </button>
-        <div id="achieved-list" style="display:none;margin-top:8px"></div>
-      </div>
+    <div style="margin-top:16px">
+      <button onclick="toggleAchievedSection()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text2);font-size:0.85rem;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-family:inherit">
+        <span>🏆 達成済み</span><span id="achieved-arrow">▼</span>
+      </button>
+      <div id="achieved-list" style="display:none;margin-top:8px"></div>
     </div>
-    <div id="wish-pane" style="display:none">
-      <div class="card">
-        <div class="form-row">
-          <input class="form-input" id="wish-name" placeholder="品名">
-          <input class="form-input" id="wish-price" type="number" placeholder="金額(円)">
-        </div>
-        <div class="form-row">
-          <select class="form-select" id="wish-prio">
-            <option value="high">🔴 高</option><option value="mid">🟡 中</option><option value="low">⚪ 低</option>
-          </select>
-          <input class="form-input" id="wish-memo" placeholder="メモ">
-        </div>
-        <button class="add-btn" style="width:100%" onclick="addWish()">追加</button>
-      </div>
-      <div id="wish-list"></div>
-      <div class="summary-total" id="wish-total"></div>
+  </div>
+
+  <div class="tab-content" id="content-shop">
+    <div id="shop-list"></div>
+    <div style="display:flex;gap:6px;margin-top:12px">
+      <input id="new-store-input" type="text" placeholder="お店を追加..." class="form-input" onkeydown="if(event.key==='Enter')addStore()">
+      <button class="add-btn" onclick="addStore()">追加</button>
     </div>
   </div>
 </div>
@@ -365,13 +331,14 @@ window.signIn = () => signInWithPopup(auth, new GoogleAuthProvider());
 
 window.toggleEditMode = () => {
   editMode = !editMode;
+  if (!editMode) editingShopItemId = null;
   const btn = document.getElementById('edit-mode-btn');
   if (editMode) {
     btn.style.background = '#3b82f6'; btn.style.color = '#fff'; btn.textContent = '✏️ 編集中';
   } else {
     btn.style.background = 'var(--surface2)'; btn.style.color = 'var(--text2)'; btn.textContent = '✏️ 編集';
   }
-  renderTodos(); renderGoals(); renderWishlist();
+  renderTodos(); renderGoals(); renderShop();
 };
 
 onAuthStateChanged(auth, async user => {
@@ -379,11 +346,12 @@ onAuthStateChanged(auth, async user => {
     uid = user.uid;
     document.getElementById('auth-screen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    await Promise.all([loadCalendar(), loadTodos(), loadGoals(), loadWishlist()]);
+    await Promise.all([loadCalendar(), loadTodos(), loadGoals(), loadShop()]);
     renderHome();
   } else {
     uid = null;
     editMode = false;
+    editingShopItemId = null;
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
   }
@@ -395,12 +363,6 @@ window.switchTab = tab => {
   document.getElementById('tab-' + tab).classList.add('active');
   document.getElementById('content-' + tab).classList.add('active');
   if (tab === 'home') renderHome();
-};
-window.switchSubTab = pane => {
-  ['goals-pane','wish-pane'].forEach(p => document.getElementById(p).style.display = 'none');
-  ['subtab-goals-pane','subtab-wish-pane'].forEach(b => document.getElementById(b).classList.remove('active'));
-  document.getElementById(pane).style.display = 'block';
-  document.getElementById('subtab-' + pane).classList.add('active');
 };
 
 // ── Calendar ──────────────────────────────────
@@ -1076,54 +1038,158 @@ window.toggleAchievedSection = () => {
   document.getElementById('achieved-arrow').textContent = showAchieved ? '▲' : '▼';
 };
 
-// ── Wishlist ──────────────────────────────────
-let wishes = [];
-async function loadWishlist() {
-  const snap = await getDocs(collection(db, 'wishlist', uid, 'items'));
-  wishes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderWishlist();
+// ── Shop ──────────────────────────────────────
+let stores = [], shopItems = [];
+let storeLongTimer = null, storeLongBtn = null;
+let itemLongTimer = null, itemLongBtn = null;
+let editingShopItemId = null;
+
+async function loadShop() {
+  const [ss, is] = await Promise.all([
+    getDocs(collection(db, 'shops', uid, 'stores')),
+    getDocs(collection(db, 'shops', uid, 'shopItems'))
+  ]);
+  stores = ss.docs.map(d => ({ id: d.id, ...d.data() })).sort((a,b) => (a.order||0)-(b.order||0));
+  shopItems = is.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderShop();
 }
-function renderWishlist() {
-  const el = document.getElementById('wish-list');
-  el.innerHTML = wishes.map(w => {
-    const prioLabel = w.priority === 'high' ? '🔴高' : w.priority === 'mid' ? '🟡中' : '⚪低';
-    return `<div class="wish-item">
-      <button class="wish-check ${w.bought?'bought':''}" onclick="toggleWish('${w.id}')">${w.bought?'✓':''}</button>
-      <div class="wish-info">
-        ${editMode ? `<input value="${escHtml(w.name)}" onblur="saveWishName('${w.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" style="border:none;background:transparent;font-size:0.9rem;border-bottom:1px solid var(--accent);outline:none;color:var(--text);width:100%">` : `<div class="wish-name ${w.bought?'bought':''}">${escHtml(w.name)}</div>`}
-        <div class="wish-price">${w.price?'¥'+Number(w.price).toLocaleString():''}${w.memo?' · '+escHtml(w.memo):''}</div>
+
+function renderShop() {
+  const el = document.getElementById('shop-list');
+  if (!el) return;
+  el.innerHTML = stores.length ? stores.map(store => {
+    const items = shopItems.filter(i => i.storeId === store.id).sort((a,b) => (a.order||0)-(b.order||0));
+    const itemsHTML = items.map(item => {
+      const lines = (item.text || '').split('\n');
+      const first = lines[0] || '';
+      const rest  = lines.slice(1);
+      const isEditing = editMode && editingShopItemId === item.id;
+      const textHTML = isEditing
+        ? `<textarea id="edit-shop-${item.id}" style="flex:1;background:var(--surface2);border:1px solid var(--accent);border-radius:6px;color:var(--text);padding:6px 8px;font-size:0.9rem;font-family:inherit;resize:vertical;min-height:60px;width:0;box-sizing:border-box"
+              onblur="saveShopItemText('${item.id}',this.value)"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.blur()}">${escHtml(item.text||'')}</textarea>`
+        : `<div style="flex:1;${item.checked?'text-decoration:line-through;opacity:0.5':''}${editMode?';cursor:pointer':''}" onclick="${editMode?`startEditShopItem('${item.id}')`:''}">`
+            + `<div style="font-size:0.9rem">${escHtml(first)}</div>`
+            + rest.map(l => `<div style="font-size:0.82rem;color:var(--text2);padding-left:8px">${escHtml(l)}</div>`).join('')
+            + `</div>`;
+      return `<div style="display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <button class="todo-check ${item.checked?'done':''}" onclick="toggleShopItem('${item.id}')" style="margin-top:3px;flex-shrink:0;border-radius:4px">${item.checked?'✓':''}</button>
+        ${textHTML}
+        <button style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1rem;padding:2px;flex-shrink:0;margin-top:2px"
+          onmousedown="startItemLongPress('${item.id}',this)" onmouseup="cancelItemLongPress()" onmouseleave="cancelItemLongPress()"
+          ontouchstart="startItemLongPress('${item.id}',this)" ontouchend="cancelItemLongPress()" ontouchcancel="cancelItemLongPress()">🗑</button>
+      </div>`;
+    }).join('');
+
+    return `<div class="cat-block">
+      <div class="cat-header" onclick="toggleStore('${store.id}')">
+        <span>${escHtml(store.name)}</span>
+        <div style="display:flex;gap:8px;align-items:center" onclick="event.stopPropagation()">
+          <button class="icon-btn" style="font-size:1.1rem" onclick="toggleShopAddForm('${store.id}')">＋</button>
+          <button class="icon-btn"
+            onmousedown="startStoreLongPress('${store.id}',this)" onmouseup="cancelStoreLongPress()" onmouseleave="cancelStoreLongPress()"
+            ontouchstart="startStoreLongPress('${store.id}',this)" ontouchend="cancelStoreLongPress()" ontouchcancel="cancelStoreLongPress()">🗑</button>
+          <span style="color:var(--text2);font-size:0.9rem">${store.open!==false?'▲':'▼'}</span>
+        </div>
       </div>
-      <span class="wish-prio ${w.priority||'low'}">${prioLabel}</span>
-      <button style="background:none;border:none;color:var(--text2);cursor:pointer" onclick="deleteWish('${w.id}')">🗑</button>
+      ${store.open !== false ? `<div class="cat-body">
+        ${itemsHTML}
+        <button class="add-task-link" onclick="toggleShopAddForm('${store.id}')">＋ アイテムを追加</button>
+        <div id="shop-add-${store.id}" style="display:none;padding-top:6px">
+          <textarea id="shop-ta-${store.id}" rows="3" placeholder="牛乳&#10;卵&#10;食パン（改行で複数入力）" style="width:100%;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:0.9rem;font-family:inherit;resize:vertical;box-sizing:border-box"></textarea>
+          <button onclick="addShopItem('${store.id}')" style="margin-top:6px;background:var(--accent);border:none;border-radius:8px;color:#fff;padding:8px 16px;font-size:0.9rem;cursor:pointer;font-weight:600">追加</button>
+        </div>
+      </div>` : ''}
     </div>`;
-  }).join('') || '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
-  const total = wishes.filter(w => !w.bought && w.price).reduce((s, w) => s + Number(w.price), 0);
-  document.getElementById('wish-total').textContent = total > 0 ? `未購入合計: ¥${total.toLocaleString()}` : '';
+  }).join('') : '<div style="color:var(--text2);font-size:0.9rem;padding:8px 0">お店を追加してください</div>';
 }
-window.addWish = async () => {
-  const name = document.getElementById('wish-name').value.trim(); if (!name) return;
-  const data = { name, price: document.getElementById('wish-price').value||'', priority: document.getElementById('wish-prio').value, memo: document.getElementById('wish-memo').value.trim(), bought: false, createdAt: Date.now() };
-  const ref = await addDoc(collection(db, 'wishlist', uid, 'items'), data);
-  wishes.push({ id: ref.id, ...data });
-  ['wish-name','wish-price','wish-memo'].forEach(id => document.getElementById(id).value = '');
-  renderWishlist();
+
+window.toggleStore = async id => {
+  const s = stores.find(x => x.id === id); if (!s) return;
+  s.open = s.open === false ? true : false;
+  renderShop();
+  updateDoc(doc(db, 'shops', uid, 'stores', id), { open: s.open }).catch(console.warn);
 };
-window.toggleWish = async id => {
-  const w = wishes.find(x => x.id === id); if (!w) return;
-  w.bought = !w.bought;
-  await updateDoc(doc(db, 'wishlist', uid, 'items', id), { bought: w.bought });
-  renderWishlist();
+window.toggleShopAddForm = storeId => {
+  const form = document.getElementById(`shop-add-${storeId}`); if (!form) return;
+  const open = form.style.display !== 'none';
+  form.style.display = open ? 'none' : 'block';
+  if (!open) setTimeout(() => document.getElementById(`shop-ta-${storeId}`)?.focus(), 50);
 };
-window.deleteWish = async id => {
-  wishes = wishes.filter(x => x.id !== id);
-  await deleteDoc(doc(db, 'wishlist', uid, 'items', id));
-  renderWishlist();
+window.addShopItem = async storeId => {
+  const ta = document.getElementById(`shop-ta-${storeId}`);
+  const text = ta?.value.trim(); if (!text) return;
+  const order = shopItems.filter(i => i.storeId === storeId).length;
+  const ref = await addDoc(collection(db, 'shops', uid, 'shopItems'), { storeId, text, checked: false, order });
+  shopItems.push({ id: ref.id, storeId, text, checked: false, order });
+  renderShop();
 };
-window.saveWishName = async (id, value) => {
-  const name = value.trim(); if (!name) return;
-  const w = wishes.find(x => x.id === id); if (!w || w.name === name) return;
-  w.name = name;
-  await updateDoc(doc(db, 'wishlist', uid, 'items', id), { name });
+window.toggleShopItem = async id => {
+  const item = shopItems.find(x => x.id === id); if (!item) return;
+  item.checked = !item.checked;
+  await updateDoc(doc(db, 'shops', uid, 'shopItems', id), { checked: item.checked });
+  renderShop();
+};
+window.addStore = async () => {
+  const input = document.getElementById('new-store-input');
+  const name = input?.value.trim(); if (!name) return;
+  const ref = await addDoc(collection(db, 'shops', uid, 'stores'), { name, order: stores.length, open: true });
+  stores.push({ id: ref.id, name, order: stores.length, open: true });
+  input.value = '';
+  renderShop();
+};
+window.startStoreLongPress = (id, btn) => {
+  storeLongBtn = btn; btn.style.color = '#ef4444';
+  storeLongTimer = setTimeout(async () => {
+    storeLongTimer = null;
+    if (confirm('このお店と配下のアイテムをすべて削除しますか？')) {
+      const del = shopItems.filter(i => i.storeId === id);
+      await Promise.all(del.map(i => deleteDoc(doc(db, 'shops', uid, 'shopItems', i.id))));
+      shopItems = shopItems.filter(i => i.storeId !== id);
+      await deleteDoc(doc(db, 'shops', uid, 'stores', id));
+      stores = stores.filter(s => s.id !== id);
+      renderShop();
+    }
+    if (btn) btn.style.color = ''; storeLongBtn = null;
+  }, 500);
+};
+window.cancelStoreLongPress = () => {
+  if (storeLongTimer) { clearTimeout(storeLongTimer); storeLongTimer = null; }
+  if (storeLongBtn) { storeLongBtn.style.color = ''; storeLongBtn = null; }
+};
+window.startItemLongPress = (id, btn) => {
+  itemLongBtn = btn; btn.style.color = '#ef4444';
+  itemLongTimer = setTimeout(async () => {
+    itemLongTimer = null;
+    if (confirm('このアイテムを削除しますか？')) {
+      shopItems = shopItems.filter(x => x.id !== id);
+      await deleteDoc(doc(db, 'shops', uid, 'shopItems', id));
+      renderShop();
+    }
+    if (btn) btn.style.color = ''; itemLongBtn = null;
+  }, 500);
+};
+window.cancelItemLongPress = () => {
+  if (itemLongTimer) { clearTimeout(itemLongTimer); itemLongTimer = null; }
+  if (itemLongBtn) { itemLongBtn.style.color = ''; itemLongBtn = null; }
+};
+window.startEditShopItem = id => {
+  editingShopItemId = id; renderShop();
+  setTimeout(() => {
+    const ta = document.getElementById(`edit-shop-${id}`);
+    if (ta) { ta.focus(); ta.selectionStart = ta.value.length; }
+  }, 0);
+};
+window.saveShopItemText = async (id, value) => {
+  const text = value.trim();
+  editingShopItemId = null;
+  const item = shopItems.find(x => x.id === id);
+  if (!item) { renderShop(); return; }
+  if (text && item.text !== text) {
+    item.text = text;
+    await updateDoc(doc(db, 'shops', uid, 'shopItems', id), { text });
+  }
+  renderShop();
 };
 
 // ── Home ──────────────────────────────────────

@@ -105,7 +105,7 @@ body {
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0; border-left: 1px solid #e2e8f0; }
 
 .cal-cell {
-  min-height: 64px; display: flex; flex-direction: column;
+  min-height: 72px; display: flex; flex-direction: column;
   align-items: center; justify-content: flex-start; padding-top: 6px; cursor: pointer; font-size: 0.8rem;
   position: relative; background: var(--surface);
   border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
@@ -115,10 +115,10 @@ body {
 .cal-cell.empty { background: #f8fafc; cursor: default; }
 .cal-cell.today-cell { background: #fef9c3 !important; outline: 2px solid #fbbf24; outline-offset: -2px; }
 .cal-cell .cell-date { font-size: 1rem; font-weight: 700; line-height: 1; }
-.cal-cell .cell-shift { font-size: 0.65rem; font-weight: 700; margin-top: 3px; }
-.cal-cell .cell-event-dot {
-  position: absolute; top: 3px; right: 3px;
-  width: 8px; height: 8px; border-radius: 50%; background: #f97316;
+.cal-cell .cell-shift { font-size: 0.82rem; font-weight: 700; margin-top: 3px; }
+.cal-cell .cell-event-mark {
+  position: absolute; top: 2px; right: 3px;
+  font-size: 0.75rem; color: #f97316; font-weight: 900; line-height: 1;
 }
 
 .cal-summary { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
@@ -248,6 +248,7 @@ body {
       <div>水</div><div>木</div><div>金</div><div style="color:#3b82f6">土</div>
     </div>
     <div class="cal-grid" id="cal-grid"></div>
+    <div id="cal-upcoming"></div>
     <div class="cal-summary" id="cal-summary"></div>
   </div>
 
@@ -502,11 +503,40 @@ function renderCalendar() {
     const shiftColor = shift ? (SHIFT_COLORS[shift] || '') : '';
     el.innerHTML = `<span class="cell-date"${dateColor ? ` style="color:${dateColor}"` : ''}>${d}</span>`;
     if (shift) el.innerHTML += `<span class="cell-shift" style="color:${shiftColor}">${shift}</span>`;
-    if ((evs[String(d)] || []).length > 0) el.innerHTML += `<span class="cell-event-dot"></span>`;
+    if ((evs[String(d)] || []).length > 0) el.innerHTML += `<span class="cell-event-mark">●</span>`;
     el.onclick = () => openShiftModal(d);
     grid.appendChild(el);
   }
   renderCalSummary(days);
+
+  const upcomingEl = document.getElementById('cal-upcoming');
+  if (upcomingEl) {
+    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const isCurrentMonth = calYear === today.getFullYear() && calMonth === today.getMonth() + 1;
+    if (!isCurrentMonth) {
+      upcomingEl.innerHTML = '';
+    } else {
+      const daysInM = new Date(calYear, calMonth, 0).getDate();
+      const upcoming = [];
+      for (let d = 1; d <= daysInM; d++) {
+        const date = new Date(calYear, calMonth - 1, d);
+        if (date < todayMidnight) continue;
+        const dayEvs = (evs[String(d)] || []);
+        dayEvs.forEach(ev => upcoming.push({ d, date, ev }));
+      }
+      upcoming.sort((a, b) => a.date - b.date || (a.ev.time||'').localeCompare(b.ev.time||''));
+      const top3 = upcoming.slice(0, 3);
+      const dayNames = ['日','月','火','水','木','金','土'];
+      upcomingEl.innerHTML = top3.length ? `
+        <div style="margin-top:12px;margin-bottom:4px;font-size:0.8rem;color:var(--text2)">📅 今後の予定</div>
+        ${top3.map(({ d, date, ev }) => `
+          <div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.85rem;align-items:center">
+            <span style="color:var(--text2);flex-shrink:0;min-width:70px">${calMonth}/${d}（${dayNames[date.getDay()]}）</span>
+            <span style="color:var(--accent);font-weight:700;flex-shrink:0">${ev.time||''}</span>
+            <span style="color:var(--text)">${escHtml(ev.title||'')}</span>
+          </div>`).join('')}` : '';
+    }
+  }
 }
 
 function renderCalSummary(days) {

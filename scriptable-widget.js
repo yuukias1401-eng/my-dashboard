@@ -255,65 +255,48 @@ function makeMediumWidget(monthData, today) {
 }
 
 // ── エラーウィジェット ────────────────────
-// ── カレンダーウィジェット（Large: 2週間グリッド）──
-function makeCalendarWidget(monthData, today) {
+// ── 共通: カレンダーグリッド描画 ─────────────
+function drawCalGrid(w, monthData, today, cellH, numRows, startFromWeek) {
   const days   = monthData.days   || {}
   const events = monthData.events || {}
-
   const SHIFT_TEXT_COLORS = {
     '1勤':'#d97706','2勤':'#1d4ed8','明け':'#7c3aed','休み':'#e11d48',
     '有給':'#059669','1勤補充':'#ea580c','2勤補充':'#2563eb','日専':'#0d9488'
   }
   const DAY_SHORT = ['日','月','火','水','木','金','土']
-
-  const w = new ListWidget()
-  w.backgroundColor = new Color('#1e293b')
-  w.url = CALENDAR_URL
-  w.setPadding(10, 10, 10, 10)
-
-  // ヘッダー: 年月
-  const titleRow = w.addStack()
-  titleRow.layoutHorizontally()
-  const titleT = titleRow.addText(`${today.getFullYear()}年 ${today.getMonth()+1}月`)
-  titleT.font = Font.boldSystemFont(13)
-  titleT.textColor = Color.white()
-  titleRow.addSpacer()
-
-  w.addSpacer(6)
+  const daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate()
+  const firstDow    = new Date(today.getFullYear(), today.getMonth(), 1).getDay()
 
   // 曜日ヘッダー
   const dowRow = w.addStack()
   dowRow.layoutHorizontally()
   for (let i = 0; i < 7; i++) {
     const cell = dowRow.addStack()
-    cell.size = new Size(0, 14)
     cell.layoutHorizontally()
     cell.addSpacer()
     const t = cell.addText(DAY_SHORT[i])
     t.font = Font.systemFont(9)
     t.textColor = i===0 ? new Color('#ef4444') : i===6 ? new Color('#3b82f6') : new Color('#64748b')
     cell.addSpacer()
-    if (i < 6) dowRow.addSpacer(2)
+    if (i < 6) dowRow.addSpacer(1)
   }
-
   w.addSpacer(3)
 
-  // カレンダーグリッド（2週分 = 14日 + 月初のオフセット）
-  const firstDow = new Date(today.getFullYear(), today.getMonth(), 1).getDay()
-  const daysInMonth = new Date(today.getFullYear(), today.getMonth()+1, 0).getDate()
-
-  // 今日が含まれる週の開始日を計算（日曜始まり）
-  const todayDow = today.getDay()
-  const weekStart = today.getDate() - todayDow  // 今週日曜の日付（1以下もあり）
-
-  // 表示する日付範囲: 今週日曜 〜 再来週土曜（14日間）
-  const cellDates = []
-  for (let i = 0; i < 14; i++) {
-    cellDates.push(weekStart + i)
+  // グリッド行
+  let cellDates = []
+  if (startFromWeek === 'today') {
+    // 今週日曜から14日分
+    const weekStart = today.getDate() - today.getDay()
+    for (let i = 0; i < numRows * 7; i++) cellDates.push(weekStart + i)
+  } else {
+    // 月初から（空白込み）
+    for (let i = 0; i < firstDow; i++) cellDates.push(0)
+    for (let i = 1; i <= daysInMonth; i++) cellDates.push(i)
+    // 6行分になるようパディング
+    while (cellDates.length < numRows * 7) cellDates.push(0)
   }
 
-  // 2行 × 7列
-  for (let row = 0; row < 2; row++) {
+  for (let row = 0; row < numRows; row++) {
     const rowStack = w.addStack()
     rowStack.layoutHorizontally()
     for (let col = 0; col < 7; col++) {
@@ -321,29 +304,30 @@ function makeCalendarWidget(monthData, today) {
       const cell = rowStack.addStack()
       cell.layoutVertically()
       cell.centerAlignContent()
-      cell.size = new Size(0, 36)
-      cell.cornerRadius = 4
+      cell.size = new Size(0, cellH)
+      cell.cornerRadius = 3
 
-      const isToday = d === today.getDate()
-      if (isToday) cell.backgroundColor = new Color('#fbbf24', 0.25)
+      const valid = d >= 1 && d <= daysInMonth
+      const isToday = valid && d === today.getDate()
+      if (isToday) cell.backgroundColor = new Color('#fbbf24', 0.2)
 
-      const shift = (d >= 1 && d <= daysInMonth) ? (days[String(d)] || '') : ''
-      const hasEvent = (d >= 1 && d <= daysInMonth) && ((events[String(d)] || []).length > 0)
+      const shift    = valid ? (days[String(d)] || '') : ''
+      const hasEvent = valid && ((events[String(d)] || []).length > 0)
 
-      cell.addSpacer(2)
+      cell.addSpacer(1)
 
       // 日付
       const dateStack = cell.addStack()
       dateStack.layoutHorizontally()
       dateStack.addSpacer()
-      const dateLabel = dateStack.addText(d >= 1 && d <= daysInMonth ? String(d) : '')
-      dateLabel.font = isToday ? Font.boldSystemFont(11) : Font.systemFont(11)
-      dateLabel.textColor = d < 1 || d > daysInMonth ? new Color('#334155') :
+      const dateLabel = dateStack.addText(valid ? String(d) : '')
+      dateLabel.font = isToday ? Font.boldSystemFont(10) : Font.systemFont(10)
+      dateLabel.textColor = !valid ? new Color('#1e293b') :
         isToday ? new Color('#fbbf24') :
         col===0 ? new Color('#ef4444') : col===6 ? new Color('#3b82f6') : Color.white()
       if (hasEvent) {
-        const dot = dateStack.addText('●')
-        dot.font = Font.systemFont(5)
+        const dot = dateStack.addText('·')
+        dot.font = Font.boldSystemFont(12)
         dot.textColor = new Color('#f97316')
       }
       dateStack.addSpacer()
@@ -353,21 +337,56 @@ function makeCalendarWidget(monthData, today) {
       shiftStack.layoutHorizontally()
       shiftStack.addSpacer()
       if (shift) {
-        // 長い名前は短縮
-        const shortName = shift.replace('補充','補').replace('勤','勤')
-        const shiftLabel = shiftStack.addText(shortName)
-        shiftLabel.font = Font.boldSystemFont(8)
-        shiftLabel.textColor = new Color(SHIFT_TEXT_COLORS[shift] || '#94a3b8')
+        const short = shift === '1勤補充' ? '1補' : shift === '2勤補充' ? '2補' : shift
+        const sl = shiftStack.addText(short)
+        sl.font = Font.boldSystemFont(cellH > 30 ? 8 : 7)
+        sl.textColor = new Color(SHIFT_TEXT_COLORS[shift] || '#94a3b8')
       }
       shiftStack.addSpacer()
 
-      cell.addSpacer(2)
-
-      if (col < 6) rowStack.addSpacer(2)
+      cell.addSpacer(1)
+      if (col < 6) rowStack.addSpacer(1)
     }
-    if (row < 1) w.addSpacer(3)
+    if (row < numRows - 1) w.addSpacer(2)
   }
+}
 
+// ── Medium: 今週＋来週（2週間）────────────
+function makeMediumCalWidget(monthData, today) {
+  const w = new ListWidget()
+  w.backgroundColor = new Color('#1e293b')
+  w.url = CALENDAR_URL
+  w.setPadding(10, 10, 10, 10)
+
+  const titleRow = w.addStack()
+  titleRow.layoutHorizontally()
+  const titleT = titleRow.addText(`${today.getFullYear()}年 ${today.getMonth()+1}月`)
+  titleT.font = Font.boldSystemFont(12)
+  titleT.textColor = Color.white()
+  titleRow.addSpacer()
+  w.addSpacer(5)
+
+  drawCalGrid(w, monthData, today, 32, 2, 'today')
+  w.addSpacer()
+  return w
+}
+
+// ── Large: 1ヶ月カレンダー ────────────────
+function makeLargeCalWidget(monthData, today) {
+  const w = new ListWidget()
+  w.backgroundColor = new Color('#1e293b')
+  w.url = CALENDAR_URL
+  w.setPadding(10, 10, 10, 10)
+
+  const titleRow = w.addStack()
+  titleRow.layoutHorizontally()
+  const titleT = titleRow.addText(`${today.getFullYear()}年 ${today.getMonth()+1}月`)
+  titleT.font = Font.boldSystemFont(13)
+  titleT.textColor = Color.white()
+  titleRow.addSpacer()
+  w.addSpacer(5)
+
+  drawCalGrid(w, monthData, today, 30, 6, 'month')
   w.addSpacer()
   return w
 }
@@ -404,9 +423,14 @@ async function main() {
     if (family === 'small') {
       widget = makeSmallWidget(monthData, today)
     } else if (family === 'large') {
-      widget = makeCalendarWidget(monthData, today)
+      widget = makeLargeCalWidget(monthData, today)
     } else {
-      widget = makeMediumWidget(monthData, today)
+      // medium: 今日の情報 or 2週間カレンダーを選択可
+      // スクリプト名に"Cal"が含まれていたらカレンダー表示
+      const isCal = Script.name().includes('Cal')
+      widget = isCal
+        ? makeMediumCalWidget(monthData, today)
+        : makeMediumWidget(monthData, today)
     }
   } catch(e) {
     widget = makeErrorWidget(e.message || '接続エラー')

@@ -216,6 +216,16 @@ body {
     <div class="card"><h2>今週の予定</h2><div id="home-events"></div></div>
     <div class="card"><h2>未完了TODO（上位3件）</h2><div id="home-todos"><div style="color:var(--text2);font-size:0.9rem">なし</div></div></div>
     <div class="card"><h2>目標達成度</h2><div id="home-goals"><div style="color:var(--text2);font-size:0.9rem">なし</div></div></div>
+    <div class="card" id="widget-setup-card">
+      <h2>📱 Scriptableウィジェット設定</h2>
+      <p style="font-size:0.85rem;color:var(--text2);margin-bottom:10px">iPhoneのホーム画面ウィジェット用のトークンを取得します。</p>
+      <button onclick="showRefreshToken()" class="add-btn" style="width:100%">🔑 トークンを表示</button>
+      <div id="token-display" style="display:none;margin-top:12px">
+        <p style="font-size:0.75rem;color:var(--text2);margin-bottom:6px">以下をコピーしてScriptableのKeychainに保存してください：</p>
+        <textarea id="token-text" rows="4" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px;font-size:0.7rem;font-family:monospace;resize:none" readonly></textarea>
+        <button onclick="copyToken()" class="add-btn" style="width:100%;margin-top:8px">📋 コピー</button>
+      </div>
+    </div>
   </div>
 
   <div class="tab-content" id="content-calendar">
@@ -1352,7 +1362,8 @@ async function renderHome() {
   await fetchShiftMonth(now.getFullYear(), now.getMonth()+1);
   const todayShift = (shiftData[getMonthKey(now.getFullYear(), now.getMonth()+1)]||{})[String(now.getDate())];
   const cls = todayShift ? (SHIFT_BADGE[todayShift]||'rest') : 'rest';
-  document.getElementById('home-shift').innerHTML = `<span class="shift-badge ${cls}">${todayShift||'未入力'}</span>`;
+  const shiftTextColor = todayShift ? (SHIFT_COLORS[todayShift]||'') : '';
+  document.getElementById('home-shift').innerHTML = `<span class="shift-badge ${cls}"${shiftTextColor?` style="color:${shiftTextColor}"`:''}}>${todayShift||'未入力'}</span>`;
 
   const weekEl = document.getElementById('home-week'); weekEl.innerHTML = '';
   for (let i = 0; i < 7; i++) {
@@ -1406,6 +1417,29 @@ async function renderHome() {
       : '<div style="color:var(--text2);font-size:0.85rem">予定なし</div>';
   }
 }
+
+// ── Scriptable Widget Setup ───────────────────
+window.showRefreshToken = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) { alert('ログインしてください'); return; }
+    const token = await user.getIdToken(true);
+    // stsTokenManager からリフレッシュトークンを取得
+    const refreshToken = user.stsTokenManager?.refreshToken || user._delegate?.stsTokenManager?.refreshToken || '取得できませんでした（ブラウザのコンソールで確認してください）';
+    const uid = user.uid;
+    const data = JSON.stringify({ refreshToken, uid }, null, 2);
+    document.getElementById('token-text').value = data;
+    document.getElementById('token-display').style.display = 'block';
+  } catch(e) {
+    alert('エラー: ' + e.message);
+  }
+};
+window.copyToken = () => {
+  const ta = document.getElementById('token-text');
+  ta.select(); ta.setSelectionRange(0, 99999);
+  document.execCommand('copy');
+  alert('コピーしました！');
+};
 
 function escHtml(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');

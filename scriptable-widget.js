@@ -347,7 +347,7 @@ function drawCalGrid(w, monthData, today, cellH, numRows, startFromWeek) {
       cell.addSpacer(1)
       if (col < 6) rowStack.addSpacer(1)
     }
-    if (row < numRows - 1) w.addSpacer(2)
+    if (row < numRows - 1) w.addSpacer(1)
   }
 }
 
@@ -356,7 +356,7 @@ function makeMediumCalWidget(monthData, today) {
   const w = new ListWidget()
   w.backgroundColor = new Color('#1e293b')
   w.url = CALENDAR_URL
-  w.setPadding(10, 10, 10, 10)
+  w.setPadding(8, 8, 8, 8)
 
   const titleRow = w.addStack()
   titleRow.layoutHorizontally()
@@ -364,10 +364,10 @@ function makeMediumCalWidget(monthData, today) {
   titleT.font = Font.boldSystemFont(12)
   titleT.textColor = Color.white()
   titleRow.addSpacer()
-  w.addSpacer(5)
+  w.addSpacer(4)
 
-  drawCalGrid(w, monthData, today, 32, 2, 'today')
-  w.addSpacer()
+  // Medium高さ約155px: パディング16 + タイトル16 + spacer4 + 曜日12 + spacer3 = 51 → 残り104 ÷ 2行 = 52px/行
+  drawCalGrid(w, monthData, today, 48, 2, 'today')
   return w
 }
 
@@ -376,7 +376,7 @@ function makeLargeCalWidget(monthData, today) {
   const w = new ListWidget()
   w.backgroundColor = new Color('#1e293b')
   w.url = CALENDAR_URL
-  w.setPadding(10, 10, 10, 10)
+  w.setPadding(8, 8, 8, 8)
 
   const titleRow = w.addStack()
   titleRow.layoutHorizontally()
@@ -384,10 +384,10 @@ function makeLargeCalWidget(monthData, today) {
   titleT.font = Font.boldSystemFont(13)
   titleT.textColor = Color.white()
   titleRow.addSpacer()
-  w.addSpacer(5)
+  w.addSpacer(4)
 
-  drawCalGrid(w, monthData, today, 30, 6, 'month')
-  w.addSpacer()
+  // Large高さ約354px: パディング16 + タイトル16 + spacer4 + 曜日12 + spacer3 = 51 → 残り303 ÷ 6行(spacer2×5=10込み) = 約48px/行
+  drawCalGrid(w, monthData, today, 46, 6, 'month')
   return w
 }
 

@@ -399,7 +399,7 @@ const SHIFT_BADGE = {
   '有給':'s-yukyu','1勤補充':'s-1sup','2勤補充':'s-2sup','日専':'s-nisspe'
 };
 const SHIFT_CYCLE = ['1勤','2勤','明け','1勤','2勤','明け','休み','休み'];
-const AUTOFILL_VERSION = 2;
+const AUTOFILL_VERSION = 3;
 
 let calYear, calMonth, shiftData = {}, eventData = {}, selectedDay = null;
 const today = new Date();
@@ -417,7 +417,6 @@ async function autoFillShifts() {
   const flagSnap = await getDoc(flagRef);
   if (flagSnap.exists() && (flagSnap.data().autoFillVersion || 1) >= AUTOFILL_VERSION) return;
 
-  // UTC dates to avoid timezone issues
   const startMs = Date.UTC(2026, 5, 5);   // 2026-06-05
   const endMs   = Date.UTC(2027, 5, 4);   // 2027-06-04
   const monthMap = {};
@@ -431,13 +430,16 @@ async function autoFillShifts() {
     monthMap[key][String(d.getUTCDate())] = shift;
   }
 
-  for (const [key, days] of Object.entries(monthMap)) {
+  for (const [key, cycleDays] of Object.entries(monthMap)) {
     const ref = doc(db, 'shifts', uid, 'months', key);
     const snap = await getDoc(ref);
-    if (snap.exists() && Object.keys(snap.data().days || {}).length > 0) continue;
-    await setDoc(ref, { days, events: {} });
-    shiftData[key] = days;
-    eventData[key] = {};
+    // 既存データがあれば手動入力を優先しつつ、未入力の日だけサイクルで埋める
+    const existingDays = snap.exists() ? (snap.data().days || {}) : {};
+    const existingEvents = snap.exists() ? (snap.data().events || {}) : {};
+    const mergedDays = { ...cycleDays, ...existingDays }; // 既存を優先
+    await setDoc(ref, { days: mergedDays, events: existingEvents });
+    shiftData[key] = mergedDays;
+    eventData[key] = existingEvents;
   }
 
   await setDoc(flagRef, { autoFilled: true, autoFillVersion: AUTOFILL_VERSION, filledAt: Date.now() });

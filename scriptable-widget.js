@@ -367,7 +367,7 @@ function makeMediumCalWidget(monthData, today) {
   w.addSpacer(4)
 
   // Medium高さ約155px: パディング16 + タイトル16 + spacer4 + 曜日12 + spacer3 = 51 → 残り104 ÷ 2行 = 52px/行
-  drawCalGrid(w, monthData, today, 48, 2, 'today')
+  drawCalGrid(w, monthData, today, 58, 2, 'today')
   return w
 }
 
@@ -387,7 +387,7 @@ function makeLargeCalWidget(monthData, today) {
   w.addSpacer(4)
 
   // Large高さ約354px: パディング16 + タイトル16 + spacer4 + 曜日12 + spacer3 = 51 → 残り303 ÷ 6行(spacer2×5=10込み) = 約48px/行
-  drawCalGrid(w, monthData, today, 46, 6, 'month')
+  drawCalGrid(w, monthData, today, 52, 6, 'month')
   return w
 }
 

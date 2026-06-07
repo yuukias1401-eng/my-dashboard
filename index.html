@@ -147,10 +147,10 @@ body {
 .todo-input-row input { flex: 1; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 0.95rem; }
 .prio-select { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 0 8px; font-size: 0.9rem; }
 .add-btn { background: var(--accent); border: none; border-radius: 8px; color: #fff; padding: 10px 14px; font-size: 0.95rem; cursor: pointer; font-weight: 600; }
-.todo-item { display: flex; align-items: center; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.todo-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); transition: background 0.1s; }
 .todo-item:last-child { border-bottom: none; }
 .todo-item.drag-over { background: #eff6ff; border-radius: 6px; }
-.drag-handle { cursor: grab; color: var(--text2); font-size: 0.9rem; padding: 2px 2px; flex-shrink: 0; touch-action: none; user-select: none; }
+.drag-handle { cursor: grab; color: var(--text2); font-size: 1.3rem; padding: 4px 8px; flex-shrink: 0; touch-action: none; user-select: none; }
 .drag-handle:active { cursor: grabbing; }
 .todo-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); background: none; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #fff; }
 .todo-check.done { background: var(--success); border-color: var(--success); }
@@ -514,6 +514,7 @@ window.openShiftModal = (d) => {
   document.getElementById('shift-modal-title').textContent = `${calYear}年${calMonth}月${d}日　${shift || '未入力'}`;
   document.getElementById('shift-picker-area').style.display = 'none';
   document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
+  editingEventIndex = null;
   renderEventList();
   document.getElementById('shift-modal').classList.add('open');
 };
@@ -541,17 +542,48 @@ window.setShift = async shift => {
 };
 
 // ── Events ────────────────────────────────────
+let editingEventIndex = null;
+
 function renderEventList() {
   const evs = ((eventData[getMonthKey(calYear, calMonth)] || {})[String(selectedDay)] || []);
   document.getElementById('event-list').innerHTML = evs.length
-    ? evs.map((ev, i) => `
-        <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:8px;padding:10px 12px;margin-bottom:6px">
-          <span style="font-size:0.9rem;font-weight:700;color:var(--accent);flex-shrink:0;min-width:48px">${ev.time||''}</span>
-          <span style="font-size:1rem;color:var(--text);flex:1">${escHtml(ev.title||'')}</span>
-          <button onclick="deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1rem">🗑</button>
-        </div>`).join('')
+    ? evs.map((ev, i) => {
+        if (editingEventIndex === i) {
+          return `
+            <div style="display:flex;align-items:center;gap:6px;background:var(--surface2);border-radius:8px;padding:8px 10px;margin-bottom:6px">
+              <input id="edit-ev-time-${i}" type="time" value="${ev.time||''}" style="width:92px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 6px;font-size:0.85rem;font-family:inherit">
+              <input id="edit-ev-title-${i}" type="text" value="${escHtml(ev.title||'')}" style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);padding:5px 8px;font-size:0.9rem;font-family:inherit" onkeydown="if(event.key==='Enter')saveEditEvent(${i})">
+              <button onclick="saveEditEvent(${i})" style="background:var(--accent);border:none;border-radius:6px;color:#fff;padding:5px 10px;font-size:0.82rem;cursor:pointer;font-weight:600;white-space:nowrap">保存</button>
+              <button onclick="cancelEditEvent()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.1rem;padding:2px 4px">✕</button>
+            </div>`;
+        }
+        return `
+          <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:8px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="startEditEvent(${i})">
+            <span style="font-size:0.9rem;font-weight:700;color:var(--accent);flex-shrink:0;min-width:48px">${ev.time||''}</span>
+            <span style="font-size:1rem;color:var(--text);flex:1">${escHtml(ev.title||'')}</span>
+            <button onclick="event.stopPropagation();deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1rem">🗑</button>
+          </div>`;
+      }).join('')
     : '<div style="color:var(--text2);font-size:0.85rem;padding:4px 0">予定なし</div>';
+  if (editingEventIndex !== null) {
+    const inp = document.getElementById(`edit-ev-title-${editingEventIndex}`);
+    if (inp) setTimeout(() => inp.focus(), 0);
+  }
 }
+window.startEditEvent = (i) => { editingEventIndex = i; renderEventList(); };
+window.cancelEditEvent = () => { editingEventIndex = null; renderEventList(); };
+window.saveEditEvent = async (i) => {
+  const time = document.getElementById(`edit-ev-time-${i}`)?.value || '';
+  const title = (document.getElementById(`edit-ev-title-${i}`)?.value || '').trim();
+  if (!title) return;
+  const key = getMonthKey(calYear, calMonth);
+  if (!eventData[key]?.[String(selectedDay)]) return;
+  eventData[key][String(selectedDay)][i] = { time, title };
+  eventData[key][String(selectedDay)].sort((a,b) => (a.time||'').localeCompare(b.time||''));
+  editingEventIndex = null;
+  await saveShiftMonth(calYear, calMonth);
+  renderEventList(); renderCalendar();
+};
 window.addEvent = async () => {
   const time = document.getElementById('event-time').value;
   const title = document.getElementById('event-title-input').value.trim();
@@ -578,7 +610,7 @@ window.deleteEvent = async idx => {
 let todos = [], showCompleted = false;
 let dragSrcId = null, touchDragId = null, touchDragEl = null;
 let longPressTimer = null, longPressBtn = null;
-let touchLongTimer = null, touchDragActive = false, touchStartY = 0;
+let touchLongTimer = null, touchDragActive = false, touchStartY = 0, ghostEl = null;
 
 async function loadTodos() {
   const snap = await getDocs(collection(db, 'todos', uid, 'items'));
@@ -607,7 +639,7 @@ function todoHTML(t) {
     ondragend="onDragEnd()">
     <span class="drag-handle" ontouchstart="onTouchStart(event,'${t.id}')">☰</span>
     <button class="todo-check ${t.done?'done':''}" onclick="toggleTodo('${t.id}')">${t.done?'✓':''}</button>
-    <span class="prio-dot" style="background:${prioColor};cursor:pointer;width:8px;height:8px;border-radius:50%;flex-shrink:0" onclick="cyclePriority('${t.id}')"></span>
+    <span class="prio-dot" style="background:${prioColor};cursor:pointer;width:14px;height:14px;border-radius:50%;flex-shrink:0" onclick="cyclePriority('${t.id}')"></span>
     <span class="todo-text ${t.done?'done':''}">${escHtml(t.text)}</span>
     <button class="todo-del" data-del-id="${t.id}"
       onmousedown="startLongPress('${t.id}',this)" onmouseup="cancelLongPress()" onmouseleave="cancelLongPress()"
@@ -682,8 +714,11 @@ window.onTouchStart = (e, id) => {
     touchDragId = id;
     if (navigator.vibrate) navigator.vibrate(50);
     if (touchDragEl) {
-      touchDragEl.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-      touchDragEl.style.opacity = '0.8';
+      touchDragEl.style.opacity = '0.4';
+      const rect = touchDragEl.getBoundingClientRect();
+      ghostEl = touchDragEl.cloneNode(true);
+      ghostEl.style.cssText = `position:fixed;pointer-events:none;z-index:9999;opacity:0.75;background:#fff;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.18);width:${touchDragEl.offsetWidth}px;left:${rect.left}px;top:${rect.top}px;transition:none;`;
+      document.body.appendChild(ghostEl);
     }
   }, 500);
 };
@@ -695,6 +730,9 @@ document.addEventListener('touchmove', e => {
   const item = el?.closest('.todo-item');
   document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
   if (item && item.dataset.id !== touchDragId) item.classList.add('drag-over');
+  if (ghostEl) {
+    ghostEl.style.top = (t.clientY - ghostEl.offsetHeight / 2) + 'px';
+  }
 }, { passive: false });
 document.addEventListener('touchend', async e => {
   clearTimeout(touchLongTimer);
@@ -709,6 +747,7 @@ document.addEventListener('touchend', async e => {
     x.style.boxShadow = '';
   });
   if (touchDragEl) { touchDragEl.style.opacity = ''; touchDragEl.style.boxShadow = ''; }
+  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
   const fromId = touchDragId;
   touchDragActive = false; touchDragId = null; touchDragEl = null;
   if (targetId && targetId !== fromId) await reorderTodos(fromId, targetId);
@@ -717,6 +756,7 @@ document.addEventListener('touchcancel', () => {
   clearTimeout(touchLongTimer);
   touchDragActive = false; touchDragId = null;
   if (touchDragEl) { touchDragEl.style.opacity = ''; touchDragEl.style.boxShadow = ''; touchDragEl = null; }
+  if (ghostEl) { ghostEl.remove(); ghostEl = null; }
   document.querySelectorAll('.todo-item').forEach(x => x.classList.remove('drag-over'));
 });
 

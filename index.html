@@ -221,6 +221,10 @@ body {
     <button class="tab-btn" onclick="switchTab('todo')" id="tab-todo"><span class="tab-icon">✅</span>TODO</button>
     <button class="tab-btn" onclick="switchTab('goals')" id="tab-goals"><span class="tab-icon">🎯</span>目標/リスト</button>
   </nav>
+  <div id="edit-mode-btn" onclick="toggleEditMode()"
+    style="position:fixed;top:8px;right:12px;z-index:150;background:var(--surface2);border:none;border-radius:20px;padding:6px 12px;font-size:0.8rem;cursor:pointer;color:var(--text2);box-shadow:0 1px 4px rgba(0,0,0,0.1)">
+    ✏️ 編集
+  </div>
 
   <div class="tab-content active" id="content-home">
     <div class="today-card">
@@ -228,6 +232,7 @@ body {
       <div class="today-shift" id="home-shift"><span class="shift-badge rest">読み込み中...</span></div>
     </div>
     <div class="card"><h2>今週のシフト</h2><div class="week-scroll" id="home-week"></div></div>
+    <div class="card"><h2>今週の予定</h2><div id="home-events"></div></div>
     <div class="card"><h2>未完了TODO（上位3件）</h2><div id="home-todos"><div style="color:var(--text2);font-size:0.9rem">なし</div></div></div>
     <div class="card"><h2>目標達成度</h2><div id="home-goals"><div style="color:var(--text2);font-size:0.9rem">なし</div></div></div>
   </div>
@@ -353,8 +358,20 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 let uid = null;
+let editMode = false;
 
 window.signIn = () => signInWithPopup(auth, new GoogleAuthProvider());
+
+window.toggleEditMode = () => {
+  editMode = !editMode;
+  const btn = document.getElementById('edit-mode-btn');
+  if (editMode) {
+    btn.style.background = '#3b82f6'; btn.style.color = '#fff'; btn.textContent = '✏️ 編集中';
+  } else {
+    btn.style.background = 'var(--surface2)'; btn.style.color = 'var(--text2)'; btn.textContent = '✏️ 編集';
+  }
+  renderTodos(); renderGoals(); renderWishlist();
+};
 
 onAuthStateChanged(auth, async user => {
   if (user) {
@@ -365,6 +382,7 @@ onAuthStateChanged(auth, async user => {
     renderHome();
   } else {
     uid = null;
+    editMode = false;
     document.getElementById('auth-screen').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
   }
@@ -640,7 +658,7 @@ function todoHTML(t) {
     <span class="drag-handle" ontouchstart="onTouchStart(event,'${t.id}')">☰</span>
     <button class="todo-check ${t.done?'done':''}" onclick="toggleTodo('${t.id}')">${t.done?'✓':''}</button>
     <span class="prio-dot" style="background:${prioColor};cursor:pointer;width:14px;height:14px;border-radius:50%;flex-shrink:0" onclick="cyclePriority('${t.id}')"></span>
-    <span class="todo-text ${t.done?'done':''}">${escHtml(t.text)}</span>
+    ${editMode && !t.done ? `<input value="${escHtml(t.text)}" onblur="saveTodoText('${t.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" style="border:none;background:transparent;flex:1;font-size:0.9rem;border-bottom:1px solid var(--accent);outline:none;color:var(--text)">` : `<span class="todo-text ${t.done?'done':''}">${escHtml(t.text)}</span>`}
     <button class="todo-del" data-del-id="${t.id}"
       onmousedown="startLongPress('${t.id}',this)" onmouseup="cancelLongPress()" onmouseleave="cancelLongPress()"
       ontouchstart="startLongPress('${t.id}',this)" ontouchend="cancelLongPress()" ontouchcancel="cancelLongPress()">🗑</button>
@@ -681,6 +699,12 @@ window.cyclePriority = async id => {
   t.priority = cycle[(cycle.indexOf(t.priority) + 1) % cycle.length];
   await updateDoc(doc(db, 'todos', uid, 'items', id), { priority: t.priority });
   renderTodos();
+};
+window.saveTodoText = async (id, value) => {
+  const text = value.trim(); if (!text) return;
+  const t = todos.find(x => x.id === id); if (!t || t.text === text) return;
+  t.text = text;
+  await updateDoc(doc(db, 'todos', uid, 'items', id), { text });
 };
 
 // ── Drag & drop (desktop) ─────────────────────
@@ -851,7 +875,7 @@ function renderGoals() {
           ${midTasks.map(t => `
             <div class="task-row">
               <button class="task-check" onclick="toggleTask('${t.id}')"></button>
-              <span class="task-text">${escHtml(t.text)}</span>
+              ${editMode ? `<input value="${escHtml(t.text)}" onblur="saveTaskText('${t.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" style="border:none;background:transparent;flex:1;font-size:0.88rem;border-bottom:1px solid var(--accent);outline:none;color:var(--text)">` : `<span class="task-text">${escHtml(t.text)}</span>`}
               <button class="icon-btn" data-del-id="${t.id}"
                 onmousedown="startTaskLongPress('${t.id}',this)" onmouseup="cancelTaskLongPress()" onmouseleave="cancelTaskLongPress()"
                 ontouchstart="startTaskLongPress('${t.id}',this)" ontouchend="cancelTaskLongPress()" ontouchcancel="cancelTaskLongPress()">🗑</button>
@@ -1002,6 +1026,12 @@ window.restoreTask = async id => {
   await updateDoc(doc(db, 'goals', uid, 'tasks', id), { done: false, doneAt: null });
   renderGoals();
 };
+window.saveTaskText = async (id, value) => {
+  const text = value.trim(); if (!text) return;
+  const t = tasks.find(x => x.id === id); if (!t || t.text === text) return;
+  t.text = text;
+  await updateDoc(doc(db, 'goals', uid, 'tasks', id), { text });
+};
 window.addCategory = async () => {
   const input = document.getElementById('new-cat-input');
   const name = input.value.trim(); if (!name) return;
@@ -1030,7 +1060,7 @@ function renderWishlist() {
     return `<div class="wish-item">
       <button class="wish-check ${w.bought?'bought':''}" onclick="toggleWish('${w.id}')">${w.bought?'✓':''}</button>
       <div class="wish-info">
-        <div class="wish-name ${w.bought?'bought':''}">${escHtml(w.name)}</div>
+        ${editMode ? `<input value="${escHtml(w.name)}" onblur="saveWishName('${w.id}',this.value)" onkeydown="if(event.key==='Enter')this.blur()" style="border:none;background:transparent;font-size:0.9rem;border-bottom:1px solid var(--accent);outline:none;color:var(--text);width:100%">` : `<div class="wish-name ${w.bought?'bought':''}">${escHtml(w.name)}</div>`}
         <div class="wish-price">${w.price?'¥'+Number(w.price).toLocaleString():''}${w.memo?' · '+escHtml(w.memo):''}</div>
       </div>
       <span class="wish-prio ${w.priority||'low'}">${prioLabel}</span>
@@ -1058,6 +1088,12 @@ window.deleteWish = async id => {
   wishes = wishes.filter(x => x.id !== id);
   await deleteDoc(doc(db, 'wishlist', uid, 'items', id));
   renderWishlist();
+};
+window.saveWishName = async (id, value) => {
+  const name = value.trim(); if (!name) return;
+  const w = wishes.find(x => x.id === id); if (!w || w.name === name) return;
+  w.name = name;
+  await updateDoc(doc(db, 'wishlist', uid, 'items', id), { name });
 };
 
 // ── Home ──────────────────────────────────────
@@ -1094,6 +1130,33 @@ async function renderHome() {
         return `<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:0.85rem;margin-bottom:4px"><span>${escHtml(cat.name)}</span><span style="color:var(--text2)">${ct.filter(t=>t.done).length}/${ct.length}</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%"></div></div></div>`;
       }).join('')
     : '<div style="color:var(--text2);font-size:0.9rem">なし</div>';
+
+  const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const weekSun = new Date(todayMidnight); weekSun.setDate(todayMidnight.getDate() - now.getDay());
+  const allWeekEvents = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekSun); d.setDate(weekSun.getDate() + i);
+    if (d < todayMidnight) continue;
+    const key = getMonthKey(d.getFullYear(), d.getMonth()+1);
+    const dayEvs = (eventData[key] || {})[String(d.getDate())] || [];
+    dayEvs.forEach(ev => allWeekEvents.push({ date: new Date(d), ev }));
+  }
+  allWeekEvents.sort((a, b) => {
+    const dc = a.date.getTime() - b.date.getTime();
+    return dc !== 0 ? dc : (a.ev.time||'').localeCompare(b.ev.time||'');
+  });
+  const top3ev = allWeekEvents.slice(0, 3);
+  const evEl = document.getElementById('home-events');
+  if (evEl) {
+    evEl.innerHTML = top3ev.length
+      ? top3ev.map(({ date, ev }) => `
+          <div style="display:flex;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);align-items:center">
+            <span style="font-size:0.8rem;color:var(--text2);flex-shrink:0">${date.getMonth()+1}/${date.getDate()}（${dayNames[date.getDay()]}）</span>
+            <span style="font-size:0.85rem;font-weight:700;color:var(--accent);flex-shrink:0">${ev.time||''}</span>
+            <span style="font-size:0.9rem">${escHtml(ev.title||'')}</span>
+          </div>`).join('')
+      : '<div style="color:var(--text2);font-size:0.85rem">予定なし</div>';
+  }
 }
 
 function escHtml(s) {

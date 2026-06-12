@@ -300,18 +300,25 @@ body {
 <!-- Shift Modal -->
 <div class="modal-bg" id="shift-modal" onclick="if(event.target===this)closeShiftModal()">
   <div class="modal-sheet">
-    <div class="modal-title" id="shift-modal-title" style="margin-bottom:14px"></div>
-    <div style="margin-bottom:14px">
-      <div style="font-size:0.82rem;color:var(--text2);font-weight:600;margin-bottom:8px">予定</div>
-      <div id="event-list" style="margin-bottom:4px"></div>
-      <hr style="border:none;border-top:1px solid var(--border);margin:12px 0">
-      <div style="font-size:0.8rem;color:var(--text2);margin-bottom:6px">予定を追加</div>
+    <!-- タイトル: 日付 + シフト -->
+    <div class="modal-title" id="shift-modal-title" style="margin-bottom:16px;font-size:1.05rem"></div>
+
+    <!-- 予定リスト（メイン） -->
+    <div id="event-list" style="margin-bottom:4px"></div>
+
+    <!-- 予定追加（折りたたみ） -->
+    <button id="add-event-toggle-btn" onclick="toggleAddEventForm()" style="width:100%;background:transparent;border:1px dashed var(--border);border-radius:8px;color:var(--accent);padding:10px 14px;font-size:0.9rem;cursor:pointer;font-family:inherit;text-align:center;margin:8px 0">＋ 予定を追加</button>
+    <div id="add-event-form" style="display:none;margin-bottom:8px">
       <div style="display:flex;gap:6px">
-        <input id="event-time" type="time" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 8px;font-size:0.85rem;font-family:inherit;width:96px">
-        <input id="event-title-input" type="text" placeholder="件名" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:7px 10px;font-size:0.85rem;font-family:inherit" onkeydown="if(event.key==='Enter')addEvent()">
-        <button onclick="addEvent()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;padding:7px 12px;font-size:0.85rem;cursor:pointer;font-weight:600">追加</button>
+        <input id="event-time" type="time" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 8px;font-size:0.9rem;font-family:inherit;width:100px">
+        <input id="event-title-input" type="text" placeholder="件名" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:8px 10px;font-size:0.9rem;font-family:inherit" onkeydown="if(event.key==='Enter')addEvent()">
+        <button onclick="addEvent()" style="background:var(--accent);border:none;border-radius:8px;color:#fff;padding:8px 14px;font-size:0.9rem;cursor:pointer;font-weight:600">追加</button>
       </div>
     </div>
+
+    <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+
+    <!-- シフト変更（折りたたみ） -->
     <button id="shift-toggle-btn" onclick="toggleShiftPicker()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:10px 14px;font-size:0.9rem;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px">シフト変更 ▼</button>
     <div id="shift-picker-area" style="display:none;margin-bottom:8px">
       <div class="shift-picker">
@@ -556,12 +563,29 @@ window.calNav = async dir => {
 window.openShiftModal = (d) => {
   selectedDay = d;
   const shift = (shiftData[getMonthKey(calYear, calMonth)] || {})[String(d)];
-  document.getElementById('shift-modal-title').textContent = `${calYear}年${calMonth}月${d}日　${shift || '未入力'}`;
+  const shiftLabel = shift
+    ? `<span style="font-weight:700;color:${SHIFT_COLORS[shift]||'#64748b'}">${shift}</span>`
+    : '<span style="color:var(--text2);font-weight:400">シフト未入力</span>';
+  document.getElementById('shift-modal-title').innerHTML =
+    `${calYear}年${calMonth}月${d}日　${shiftLabel}`;
   document.getElementById('shift-picker-area').style.display = 'none';
   document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
+  // 追加フォームを閉じた状態にリセット
+  document.getElementById('add-event-form').style.display = 'none';
+  document.getElementById('add-event-toggle-btn').textContent = '＋ 予定を追加';
+  document.getElementById('event-time').value = '';
+  document.getElementById('event-title-input').value = '';
   editingEventIndex = null;
   renderEventList();
   document.getElementById('shift-modal').classList.add('open');
+};
+window.toggleAddEventForm = () => {
+  const form = document.getElementById('add-event-form');
+  const btn  = document.getElementById('add-event-toggle-btn');
+  const open = form.style.display !== 'none';
+  form.style.display = open ? 'none' : 'flex';
+  btn.textContent = open ? '＋ 予定を追加' : '✕ キャンセル';
+  if (!open) setTimeout(() => document.getElementById('event-title-input').focus(), 50);
 };
 window.closeShiftModal = () => {
   document.getElementById('shift-modal').classList.remove('open');
@@ -580,7 +604,10 @@ window.setShift = async shift => {
   if (shift === null) delete shiftData[key][String(selectedDay)];
   else shiftData[key][String(selectedDay)] = shift;
   await saveShiftMonth(calYear, calMonth);
-  document.getElementById('shift-modal-title').textContent = `${calYear}年${calMonth}月${selectedDay}日　${shift || '未入力'}`;
+  const sl = shift
+    ? `<span style="font-weight:700;color:${SHIFT_COLORS[shift]||'#64748b'}">${shift}</span>`
+    : '<span style="color:var(--text2);font-weight:400">シフト未入力</span>';
+  document.getElementById('shift-modal-title').innerHTML = `${calYear}年${calMonth}月${selectedDay}日　${sl}`;
   document.getElementById('shift-picker-area').style.display = 'none';
   document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
   renderCalendar();
@@ -609,7 +636,7 @@ function renderEventList() {
             <button onclick="event.stopPropagation();deleteEvent(${i})" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1rem">🗑</button>
           </div>`;
       }).join('')
-    : '<div style="color:var(--text2);font-size:0.85rem;padding:4px 0">予定なし</div>';
+    : '<div style="color:var(--text2);font-size:0.9rem;padding:12px 0;text-align:center">📭 予定なし</div>';
   if (editingEventIndex !== null) {
     const inp = document.getElementById(`edit-ev-title-${editingEventIndex}`);
     if (inp) setTimeout(() => inp.focus(), 0);
@@ -640,6 +667,9 @@ window.addEvent = async () => {
   eventData[key][String(selectedDay)].sort((a,b) => (a.time||'').localeCompare(b.time||''));
   document.getElementById('event-time').value = '';
   document.getElementById('event-title-input').value = '';
+  // 追加フォームを閉じる
+  document.getElementById('add-event-form').style.display = 'none';
+  document.getElementById('add-event-toggle-btn').textContent = '＋ 予定を追加';
   await saveShiftMonth(calYear, calMonth);
   renderEventList(); renderCalendar();
 };

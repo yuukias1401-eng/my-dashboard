@@ -22,12 +22,26 @@ const SHIFT_COLORS = {
 
 const DAY_NAMES = ['日','月','火','水','木','金','土']
 
+// ── データキャッシュ（通信失敗時に前回データで表示）──
+const fm = FileManager.local()
+const CACHE_PATH = fm.joinPath(fm.documentsDirectory(), 'mydashboard_cache.json')
+function saveCache(yearMonth, data) {
+  try { fm.writeString(CACHE_PATH, JSON.stringify({ yearMonth, data })) } catch(e) {}
+}
+function loadCache(yearMonth) {
+  try {
+    if (!fm.fileExists(CACHE_PATH)) return null
+    const c = JSON.parse(fm.readString(CACHE_PATH))
+    return c.yearMonth === yearMonth ? c.data : null
+  } catch(e) { return null }
+}
+
 // ── セットアップ ──────────────────────────
-async function setup() {
+async function setup(expired) {
   if (!Keychain.contains(KEYCHAIN_KEY)) {
     const alert = new Alert()
-    alert.title = "初回セットアップ"
-    alert.message = "my-dashboardのホーム画面で「トークンを表示」を押してコピーしたJSONを貼り付けてください。"
+    alert.title = expired ? "トークンの期限切れ" : "初回セットアップ"
+    alert.message = (expired ? "ログインの有効期限が切れました。\n" : "") + "my-dashboardのホーム画面で「トークンを表示」を押してコピーしたJSONを貼り付けてください。"
     alert.addTextField("JSONを貼り付け", "")
     alert.addAction("保存")
     alert.addCancelAction("キャンセル")
@@ -418,8 +432,24 @@ async function main() {
 
   let widget
   try {
-    const { idToken, uid } = await getIdToken()
-    const monthData = await fetchMonth(idToken, uid, yearMonth)
+    let monthData, stale = false
+    try {
+      const { idToken, uid } = await getIdToken()
+      monthData = await fetchMonth(idToken, uid, yearMonth)
+      saveCache(yearMonth, monthData)
+    } catch(e) {
+      const msg = e.message || ''
+      const tokenDead = /TOKEN_EXPIRED|INVALID_REFRESH_TOKEN|USER_DISABLED|USER_NOT_FOUND/.test(msg)
+      // アプリ内で実行中なら、その場で新しいトークンを貼ってもらう
+      if (tokenDead && !config.runsInWidget) {
+        Keychain.remove(KEYCHAIN_KEY)
+        await setup(true)
+        Script.complete(); return
+      }
+      monthData = loadCache(yearMonth)
+      if (!monthData) throw new Error(tokenDead ? 'トークン期限切れ\nScriptableで開いて再設定' : msg)
+      stale = true
+    }
     if (family === 'small') {
       widget = makeSmallWidget(monthData, today)
     } else if (family === 'large') {
@@ -431,6 +461,11 @@ async function main() {
       widget = isCal
         ? makeMediumCalWidget(monthData, today)
         : makeMediumWidget(monthData, today)
+    }
+    if (stale) {
+      const warn = widget.addText('⚠️ 前回のデータ')
+      warn.font = Font.systemFont(8)
+      warn.textColor = new Color('#f59e0b')
     }
   } catch(e) {
     widget = makeErrorWidget(e.message || '接続エラー')

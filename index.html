@@ -617,12 +617,12 @@ function renderDayPanel() {
       <div style="font-size:1rem;font-weight:700">
         <span style="color:${dateColor}">${calMonth}月${selectedDay}日（${dayNames[dow]}）</span>${shiftHtml}
       </div>
-      <button onclick="selectedDay=null;document.getElementById('cal-day-panel').style.display='none';document.querySelectorAll('.cal-cell').forEach(c=>c.classList.remove('selected-cell'))" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2rem;padding:2px 6px">✕</button>
+      <button onclick="closeDayPanel()" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:1.2rem;padding:2px 6px">✕</button>
     </div>
     ${evsHtml}
     <div style="display:flex;gap:8px;margin-top:10px">
       <button onclick="openAddEventModal()" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;padding:9px;font-size:0.9rem;cursor:pointer;font-weight:600">＋ 予定を追加</button>
-      <button onclick="openShiftModal(selectedDay)" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;padding:9px;font-size:0.9rem;cursor:pointer;font-weight:600">シフト変更</button>
+      <button onclick="openShiftModal()" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;padding:9px;font-size:0.9rem;cursor:pointer;font-weight:600">シフト変更</button>
     </div>`;
 }
 
@@ -650,8 +650,15 @@ window.openAddEventModal = () => {
   setTimeout(() => document.getElementById('event-title-input').focus(), 100);
 };
 
+window.closeDayPanel = () => {
+  selectedDay = null;
+  document.getElementById('cal-day-panel').style.display = 'none';
+  document.querySelectorAll('.cal-cell').forEach(c => c.classList.remove('selected-cell'));
+};
 window.openShiftModal = (d) => {
-  selectedDay = d;
+  if (d) selectedDay = d;
+  d = selectedDay;
+  if (!d) return;
   const shift = (shiftData[getMonthKey(calYear, calMonth)] || {})[String(d)];
   const shiftLabel = shift
     ? `<span style="font-weight:700;color:${SHIFT_COLORS[shift]||'#64748b'}">${shift}</span>`

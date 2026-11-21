@@ -136,6 +136,7 @@ body {
 .shift-opt-btn.s2      { background: #3b82f6; }
 .shift-opt-btn.sake    { background: #a78bfa; }
 .shift-opt-btn.rest    { background: #94a3b8; }
+.shift-opt-btn.s-yasumi { background: #e11d48; }
 .shift-opt-btn.s-yukyu  { background: #10b981; }
 .shift-opt-btn.s-1sup   { background: #f97316; }
 .shift-opt-btn.s-2sup   { background: #60a5fa; color: #000; }
@@ -305,6 +306,7 @@ body {
     <!-- タイトル: 日付 + シフト -->
     <div class="modal-title" id="shift-modal-title" style="margin-bottom:16px;font-size:1.05rem"></div>
 
+    <div id="modal-event-section">
     <!-- 予定リスト（メイン） -->
     <div id="event-list" style="margin-bottom:4px"></div>
 
@@ -318,10 +320,10 @@ body {
       </div>
     </div>
 
-    <hr style="border:none;border-top:1px solid var(--border);margin:10px 0">
+    </div>
 
-    <!-- シフト変更（折りたたみ） -->
-    <button id="shift-toggle-btn" onclick="toggleShiftPicker()" style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:10px 14px;font-size:0.9rem;cursor:pointer;font-family:inherit;text-align:left;margin-bottom:8px">シフト変更 ▼</button>
+    <!-- シフト変更（シフト変更ボタンから開いたときだけ表示） -->
+    <button id="shift-toggle-btn" style="display:none">シフト変更 ▼</button>
     <div id="shift-picker-area" style="display:none;margin-bottom:8px">
       <div class="shift-picker">
         <button class="shift-opt-btn s-1sup"   onclick="setShift('1勤補充')">1勤補充</button>
@@ -330,8 +332,9 @@ body {
         <button class="shift-opt-btn s-nisspe" style="grid-column:span 3" onclick="setShift('日専')">日専</button>
         <button class="shift-opt-btn s-yukyu"  style="grid-column:span 3" onclick="setShift('有給')">有給</button>
         <button class="shift-opt-btn s1"       onclick="setShift('1勤')">1勤</button>
-        <button class="shift-opt-btn s2"       style="grid-column:span 2" onclick="setShift('2勤')">2勤</button>
-        <button class="shift-opt-btn clear"    onclick="setShift(null)">クリア</button>
+        <button class="shift-opt-btn s2"       onclick="setShift('2勤')">2勤</button>
+        <button class="shift-opt-btn s-yasumi" onclick="setShift('休み')">休み</button>
+        <button class="shift-opt-btn clear"    style="grid-column:span 3" onclick="setShift(null)">クリア</button>
       </div>
     </div>
     <button class="modal-close-btn" onclick="closeShiftModal()">閉じる</button>
@@ -619,7 +622,7 @@ function renderDayPanel() {
     ${evsHtml}
     <div style="display:flex;gap:8px;margin-top:10px">
       <button onclick="openAddEventModal()" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;padding:9px;font-size:0.9rem;cursor:pointer;font-weight:600">＋ 予定を追加</button>
-      <button onclick="openShiftModal(selectedDay)" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text2);padding:9px;font-size:0.9rem;cursor:pointer">シフト変更</button>
+      <button onclick="openShiftModal(selectedDay)" style="flex:1;background:var(--accent);border:none;border-radius:8px;color:#fff;padding:9px;font-size:0.9rem;cursor:pointer;font-weight:600">シフト変更</button>
     </div>`;
 }
 
@@ -639,8 +642,8 @@ window.openAddEventModal = () => {
   document.getElementById('event-title-input').value = '';
   document.getElementById('shift-modal-title').innerHTML =
     `${calYear}年${calMonth}月${selectedDay}日　予定を追加`;
+  document.getElementById('modal-event-section').style.display = 'block';
   document.getElementById('shift-picker-area').style.display = 'none';
-  document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
   editingEventIndex = null;
   renderEventList();
   document.getElementById('shift-modal').classList.add('open');
@@ -655,15 +658,9 @@ window.openShiftModal = (d) => {
     : '<span style="color:var(--text2);font-weight:400">シフト未入力</span>';
   document.getElementById('shift-modal-title').innerHTML =
     `${calYear}年${calMonth}月${d}日　${shiftLabel}`;
-  document.getElementById('shift-picker-area').style.display = 'none';
-  document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
-  // 追加フォームを閉じた状態にリセット
-  document.getElementById('add-event-form').style.display = 'none';
-  document.getElementById('add-event-toggle-btn').textContent = '＋ 予定を追加';
-  document.getElementById('event-time').value = '';
-  document.getElementById('event-title-input').value = '';
-  editingEventIndex = null;
-  renderEventList();
+  // シフト変更のときはシフトのボタンだけ表示
+  document.getElementById('modal-event-section').style.display = 'none';
+  document.getElementById('shift-picker-area').style.display = 'block';
   document.getElementById('shift-modal').classList.add('open');
 };
 window.toggleAddEventForm = () => {
@@ -695,8 +692,8 @@ window.setShift = async shift => {
     ? `<span style="font-weight:700;color:${SHIFT_COLORS[shift]||'#64748b'}">${shift}</span>`
     : '<span style="color:var(--text2);font-weight:400">シフト未入力</span>';
   document.getElementById('shift-modal-title').innerHTML = `${calYear}年${calMonth}月${selectedDay}日　${sl}`;
-  document.getElementById('shift-picker-area').style.display = 'none';
-  document.getElementById('shift-toggle-btn').textContent = 'シフト変更 ▼';
+  // 選んだら閉じる
+  document.getElementById('shift-modal').classList.remove('open');
   renderCalendar(); renderDayPanel();
 };
 
@@ -950,7 +947,7 @@ window.startLongPress = (id, btn) => {
     if (confirm('このTODOを削除しますか？')) await deleteTodo(id);
     if (btn) btn.style.color = '';
     longPressBtn = null;
-  }, 500);
+  }, 0);
 };
 window.cancelLongPress = () => {
   if (longPressTimer) {
@@ -1082,7 +1079,7 @@ window.startTaskLongPress = (id, btn) => {
     if (confirm('このタスクを削除しますか？')) await deleteTask(id);
     if (btn) btn.style.color = '';
     taskLongPressBtn = null;
-  }, 500);
+  }, 0);
 };
 window.cancelTaskLongPress = () => {
   if (taskLongPressTimer) {
@@ -1101,7 +1098,7 @@ window.startMidLongPress = (id, btn) => {
     if (confirm('この中カテゴリと配下のタスクをすべて削除しますか？')) await deleteMidItem(id);
     if (btn) btn.style.color = '';
     midLongPressBtn = null;
-  }, 500);
+  }, 0);
 };
 window.cancelMidLongPress = () => {
   if (midLongPressTimer) {
@@ -1319,7 +1316,7 @@ window.startRoutineLongPress = (id, btn) => {
       renderRoutines();
     }
     if (btn) btn.style.color = ''; routineLongBtn = null;
-  }, 500);
+  }, 0);
 };
 window.cancelRoutineLongPress = () => {
   if (routineLongTimer) { clearTimeout(routineLongTimer); routineLongTimer = null; }
@@ -1439,7 +1436,7 @@ window.startStoreLongPress = (id, btn) => {
       renderShop();
     }
     if (btn) btn.style.color = ''; storeLongBtn = null;
-  }, 500);
+  }, 0);
 };
 window.cancelStoreLongPress = () => {
   if (storeLongTimer) { clearTimeout(storeLongTimer); storeLongTimer = null; }
@@ -1455,7 +1452,7 @@ window.startItemLongPress = (id, btn) => {
       renderShop();
     }
     if (btn) btn.style.color = ''; itemLongBtn = null;
-  }, 500);
+  }, 0);
 };
 window.cancelItemLongPress = () => {
   if (itemLongTimer) { clearTimeout(itemLongTimer); itemLongTimer = null; }
